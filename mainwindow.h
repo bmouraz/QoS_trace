@@ -18,7 +18,6 @@ public:
   explicit MainWindow(QWidget *parent = nullptr);
   ~MainWindow();
 
-
 private slots:
   void makePlot();
   void combobox_config();

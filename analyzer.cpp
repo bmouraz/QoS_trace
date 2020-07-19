@@ -20,7 +20,6 @@ void analyzer::getParameters(QString line)
   QString node_str;
   int node_int = 0;
   int totallength = 0;
-  int UdpHeaderchecker = 0;
   int sizelength = 0;
   int pcklosschecker = 0;
 
@@ -340,4 +339,3 @@ int analyzer::getPckt(int node)
 {
   return pcktloss[node];
 }
-

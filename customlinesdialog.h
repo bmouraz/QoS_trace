@@ -22,7 +22,6 @@ public:
   void ajust_Graphcombo(QVector<int> graphs);
   int getgraphindex();
 
-
 private slots:
   void on_color_Button_clicked();
 
@@ -33,7 +32,6 @@ private slots:
   void on_scatter_Combo_currentTextChanged(const QString &arg1);
 
   void on_scatter_Slider_sliderMoved(int position);
-
 
   void on_ok_cancel_apply_buttons_accepted();
 

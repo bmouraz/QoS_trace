@@ -30,7 +30,6 @@ public:
 
 private:
 
-
   QVector <QVector<float>> data_filtered; //after getting all data from .tr file
 
   //received time filtered from .tr file
@@ -44,7 +43,6 @@ private:
   QVector <float> throughput ;
   QVector <float> goodput ;
 
-  //
   QVector <int> nodelist;
   QVector <int> reclist;
   QVector <float> jitter;

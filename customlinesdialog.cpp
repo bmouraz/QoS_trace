@@ -118,7 +118,6 @@ int CustomLinesdialog::get_ScatterSize()
   return scattersizeret;
 }
 
-
 void CustomLinesdialog::on_ok_cancel_apply_buttons_accepted()
 {
   this->close();

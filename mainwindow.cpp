@@ -30,7 +30,6 @@ QVector<double> convert(QVector<float> in)
 void MainWindow::makePlot()
 {
 
-
   QVector<double> time, parameters;
   time = convert(alz->getTime(node,parameter));
   parameters = convert(alz->getVector(node,parameter));
