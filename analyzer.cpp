@@ -132,28 +132,45 @@ void analyzer::getParameters(QString line)
         case(27):
           totallength = word.toInt() +2;
           sizelength = totallength;
+          if(qd == "+")
+              sentdatarec[node_int] = sentdatarec[node_int]+ sizelength;
+          else if(qd == "r")
+              recdatarec[node_int] = recdatarec[node_int]+ sizelength;
           break;
 
         case(38):
+          if (node_int == 1)
+              qDebug()<<node_int<<(sentdatarec[1])<<(sizelength)<<timeSimu;
           if(word != "Default")
             {
               const QRegExp rx(QLatin1Literal("[^0-9]+"));
               const auto&& parts = word.split(rx, QString::SkipEmptyParts);
               if(qd == "+")
                 {
-                  sentdatarec[node_int] = sentdatarec[node_int]+ sizelength;
-                  lambda[node_int] = (((sentdatarec[node_int]))/((sizelength)))/(timeSimu);
-                  throughput[node_int] = lambda[node_int]*(totallength+2);
-                  goodput[node_int] = lambda[node_int]*(parts[0].toInt());
+                  lambda[node_int] = float((((sentdatarec[node_int]))/((sizelength)))/(timeSimu));
+                  throughput[node_int] = float(lambda[node_int]*(totallength+2));
+                  goodput[node_int] = float(lambda[node_int]*(parts[0].toInt()));
                 }
               if(qd=="r")
                 {
-                  recdatarec[node_int] = recdatarec[node_int] + sizelength;
-                  lambda[node_int] = (((sentdatarec[node_int]))/((sizelength)))/(timeSimu);
-                  throughput[node_int] = lambda[node_int]*(sizelength);
-                  goodput[node_int] = lambda[node_int]*(parts[0].toInt());
+                  lambda[node_int] = float((((sentdatarec[node_int]))/((sizelength)))/(timeSimu));
+                  throughput[node_int] = float(lambda[node_int]*(sizelength));
+                  goodput[node_int] = float(lambda[node_int]*(parts[0].toInt()));
                 }
             }
+          else
+          {
+              if(qd == "+")
+                {
+                  lambda[node_int] = float((((sentdatarec[node_int]))/((sizelength)))/(timeSimu));
+                  throughput[node_int] = float(lambda[node_int]*(totallength+2));
+                }
+              if(qd=="r")
+                {
+                  lambda[node_int] = float((((sentdatarec[node_int]))/((sizelength)))/(timeSimu));
+                  throughput[node_int] = float(lambda[node_int]*(sizelength));
+                }
+          }
 
 
              QVector<float> tmp;
