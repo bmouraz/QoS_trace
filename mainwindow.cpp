@@ -444,7 +444,6 @@ void MainWindow::set_Scatter(QString scatter, int graph_index, int scatterSize)
 void MainWindow::on_actionLine_Style_Scatter_Color_triggered()
 {
     CustomLinesdialog *dialog = new CustomLinesdialog;
-    qDebug()<<qtd_graphs_vector.size();
     dialog->ajust_Graphcombo(qtd_graphs_vector);
     dialog->exec();
     if(dialog->result())

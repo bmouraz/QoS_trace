@@ -139,8 +139,6 @@ void analyzer::getParameters(QString line)
           break;
 
         case(38):
-          if (node_int == 1)
-              qDebug()<<node_int<<(sentdatarec[1])<<(sizelength)<<timeSimu;
           if(word != "Default")
             {
               const QRegExp rx(QLatin1Literal("[^0-9]+"));
