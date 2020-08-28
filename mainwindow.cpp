@@ -879,12 +879,7 @@ void MainWindow::on_actionSubgrid_triggered()
         ui->customPlot->xAxis->grid()->setSubGridVisible(false);
         ui->customPlot->yAxis->grid()->setSubGridVisible(false);
     }
-<<<<<<< HEAD
     ui->customPlot->replot();
-=======
-
-
->>>>>>> 886d1c99b5c0ab9bea07be4aaafbaffbbff5ca0e
 }
 
 void MainWindow::on_actionChange_Xticks_triggered()
