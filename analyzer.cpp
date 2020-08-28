@@ -192,6 +192,20 @@ void analyzer::getParameters(QString line)
              tmp.push_back(recdatarec[node_int]);
              data_filtered.push_back(tmp);
 
+             tmp.clear();
+
+             tmp.push_back(node_int);
+             tmp.push_back(timeall);
+             tmp.push_back(sentdatarec[node_int]);
+             tmp.push_back(recdatarec[node_int]);
+             tmp.push_back(jitterSum[(node_int)]);
+             tmp.push_back(pcktloss[(node_int)]);
+             tmp.push_back(lambda[node_int]);
+             tmp.push_back(throughput[node_int]);
+             tmp.push_back(goodput[node_int]);
+             alldata.push_back(tmp);
+
+
 
           break;
     }
@@ -224,10 +238,7 @@ QVector<int> analyzer::search_node(int item, QString parameter)
    return rec;
  }
 
-
-
 void analyzer::getData(QFile *file)
-
 {
     QTextStream in(file);
      while (!in.atEnd())
@@ -353,4 +364,115 @@ float analyzer::getJitterSum(int node)
 int analyzer::getPckt(int node)
 {
   return pcktloss[node];
+}
+
+void analyzer::transform2file(QString type, QString filename)
+{
+    QFile file(filename);
+    if(file.open(QIODevice::ReadWrite))
+    {
+
+        if(type == "csv")
+        {
+            QTextStream header(&file);
+            QTextStream datafile(&file);
+            header.flush();
+            datafile.flush();
+            header<<"Node,Time,Sent,Received,JitterSum,PcktLoss,Lambda,Throughput,Goodput"<<endl;
+            for(int i = 0; i<alldata.size();i++)
+            {
+                datafile<<alldata[i][0]<<","<<alldata[i][1]<<","<<alldata[i][2]<<","<<alldata[i][3]<<","<<alldata[i][4]<<","<<alldata[i][5]<<","<<alldata[i][6]<<","<<alldata[i][7]<<","<<alldata[i][8]<<","<<endl;
+            }
+            file.close();
+        }
+        else if (type == "prn")
+        {
+            QTextStream header(&file);
+            QTextStream datafile(&file);
+            header.flush();
+            datafile.flush();
+            header<<"Node Time Sent Received JitterSum PcktLoss Lambda Throughput Goodput"<<endl;
+            for(int i = 0; i<alldata.size();i++)
+            {
+                datafile<<alldata[i][0]<<" "<<alldata[i][1]<<" "<<alldata[i][2]<<" "<<alldata[i][3]<<" "<<alldata[i][4]<<" "<<alldata[i][5]<<" "<<alldata[i][6]<<" "<<alldata[i][7]<<" "<<alldata[i][8]<<" "<<endl;
+            }
+            file.close();
+        }
+        else
+        {
+            QTextStream header(&file);
+            QTextStream datafile(&file);
+            header<<"Node;Time;Sent;Received;JitterSum;PcktLoss;Lambda;Throughput;Goodput"<<endl;
+            for(int i = 0; i<alldata.size();i++)
+            {
+                datafile<<alldata[i][0]<<";"<<alldata[i][1]<<";"<<alldata[i][2]<<";"<<alldata[i][3]<<";"<<alldata[i][4]<<";"<<alldata[i][5]<<";"<<alldata[i][6]<<";"<<alldata[i][7]<<";"<<alldata[i][8]<<";"<<endl;
+            }
+            file.close();
+        }
+    }
+
+}
+
+QVector<float> analyzer::getValues(QString parameter)
+{
+
+
+  QVector<float> parameters;
+  if (QString::compare(parameter, "Lambda", Qt::CaseInsensitive) == 0)
+    {
+      for(int i = 0; i<nodelist.size();i++)
+        {
+            parameters.push_back(lambda[i]);
+        }
+    }
+  if (QString::compare(parameter, "Throughput", Qt::CaseInsensitive) == 0)
+    {
+      for(int i = 0; i<nodelist.size();i++)
+        {
+            parameters.push_back(throughput[i]);
+        }
+    }
+  if (QString::compare(parameter, "Goodput", Qt::CaseInsensitive) == 0)
+    {
+      for(int i = 0; i<nodelist.size();i++)
+        {
+            parameters.push_back(goodput[i]);
+        }
+    }
+  if (QString::compare(parameter, "Sent Data", Qt::CaseInsensitive) == 0)
+    {
+      for(int i = 0; i<nodelist.size();i++)
+        {
+            parameters.push_back(sentdatarec[i]);
+        }
+    }
+  if (QString::compare(parameter, "Jitter Sum", Qt::CaseInsensitive) == 0)
+    {
+      for(int i = 0; i<nodelist.size();i++)
+        parameters.push_back(jitterSum[i]);
+    }
+  if (QString::compare(parameter, "Dropped Packets", Qt::CaseInsensitive) == 0)
+    {
+      for(int i = 0; i<nodelist.size();i++)
+        parameters.push_back(pcktloss[i]);
+    }
+  if (QString::compare(parameter, "Received Data", Qt::CaseInsensitive) == 0)
+    {
+      for(int i = 0; i<nodelist.size();i++)
+        parameters.push_back(recdatarec[i]);
+    }
+  return parameters;
+}
+
+QVector<float> analyzer::getValues_nodes(int node)
+{
+  QVector<float> parameters;
+  parameters.append(getLambda(node));
+  parameters.append(getThrpt(node));
+  parameters.append(getGood(node));
+  parameters.append(getSentDatatotal(node));
+  parameters.append(recdatarec.at(node));
+  parameters.append(getJitterSum(node));
+  parameters.append(getPckt(node));
+  return parameters;
 }
