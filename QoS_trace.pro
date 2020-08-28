@@ -27,6 +27,7 @@ CONFIG += c++11
 SOURCES += \
         analyzer.cpp \
         customlinesdialog.cpp \
+        inputicksdialog.cpp \
         main.cpp \
         mainwindow.cpp \
         qcustomplot.cpp
@@ -34,11 +35,13 @@ SOURCES += \
 HEADERS += \
         analyzer.h \
         customlinesdialog.h \
+        inputicksdialog.h \
         mainwindow.h \
         qcustomplot.h
 
 FORMS += \
         customlinesdialog.ui \
+        inputicksdialog.ui \
         mainwindow.ui
 
 # Default rules for deployment.

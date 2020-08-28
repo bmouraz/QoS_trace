@@ -5,6 +5,9 @@
 #include<QTextStream>
 #include<QFile>
 #include<QDebug>
+#include<QPdfWriter>
+#include<QTextDocument>
+#include<QPainter>
 
 #include <bits/stdc++.h>
 #include <algorithm>
@@ -20,6 +23,8 @@ public:
   QVector<float> getVector(int node, QString parameter);
   QVector<float> getTime (int node,  QString parameter);
   QVector<int> getNodes ();
+  QVector<float> getValues(QString parameter);
+  QVector<float> getValues_nodes(int node);
   float getSimutime();
   int getSentDatatotal(int node);
   float getLambda(int node);
@@ -27,6 +32,7 @@ public:
   float getGood(int node);
   float getJitterSum(int node);
   int getPckt(int node);
+  void transform2file(QString type, QString filename);
 
 private:
 
@@ -52,7 +58,7 @@ private:
   QVector <int> recdatarec;
   QVector <QVector <float>> sentdata;
   QVector <int> pcktloss;
-
+  QVector <QVector <float>> alldata;
   QString qd;
   int node_intchecker;
   QVector <int> search_node(int item, QString parameter);

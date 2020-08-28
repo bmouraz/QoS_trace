@@ -4,6 +4,8 @@
 #include <QMainWindow>
 #include<QColorDialog>
 #include"customlinesdialog.h"
+#include "qcustomplot.h"
+#include "inputicksdialog.h"
 #include "analyzer.h"
 
 namespace Ui {
@@ -34,11 +36,29 @@ private slots:
   void contextMenuRequest(QPoint pos);
   void moveLegend();
   void changeColor();
-  void on_actionChage_BG_triggered();
+  void axisLabelDoubleClick(QCPAxis *axis, QCPAxis::SelectablePart part);
+
   void on_actionLine_Style_Scatter_Color_triggered();
 
+  void on_actionExport_File_triggered();
+
+  void on_pushButton_clicked();
+
+  void on_actionChange_Bar_Line_Chart_triggered();
+
+  void on_actionLine_Chart_triggered();
+
+  void on_actionChange_Scale_Log_triggered();
+
+  void on_actionChange_Scale_Linear_triggered();
+
+  void on_actionSubgrid_triggered();
+
+
+  void on_actionChange_Xticks_triggered();
+
 private:
-  int BG = 0;
+
   QVector <int> qtd_graphs_vector;
   int qtd_graph_variable=0;
   int node;
@@ -48,6 +68,10 @@ private:
   enum Coluna{
       NODE, LAMBDA, THROUGHPUT,GOODPUT,SENTDATA,JITTERSUM,DROPPED
   };
+  int scale_checker = 0;
+  int chart_checker = 0; //if 0 - line 1 - bar
+  int ticker_spacing_x = 5;
+  int ticker_spacing_y = 1;
   QString parameter;
   analyzer *alz;
   QFile *arq;
