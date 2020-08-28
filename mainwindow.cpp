@@ -859,7 +859,7 @@ void MainWindow::on_actionChange_Scale_Linear_triggered()
     fixedTicker->setTickStep(ticker_spacing_y);
     ui->customPlot->yAxis->setTicker(fixedTicker);
 
-    ui->customPlot->yAxis->setNumberFormat("fb");
+    ui->customPlot->yAxis->setNumberFormat("f");
     ui->customPlot->xAxis->setTicks(true);
     ui->customPlot->xAxis->rescale();
     ui->customPlot->replot();
