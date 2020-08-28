@@ -892,7 +892,6 @@ void MainWindow::on_actionChange_Xticks_triggered()
         {
             ticker_spacing_x = dialog->get_xticks();
             ticker_spacing_y = dialog->get_yticks();
-            qDebug()<<ticker_spacing_x<<","<<ticker_spacing_y;
             QSharedPointer <QCPAxisTickerFixed> fixedTicker(new QCPAxisTickerFixed);
             fixedTicker->setTickStep(ticker_spacing_x);
             ui->customPlot->xAxis->setTicker(fixedTicker);
