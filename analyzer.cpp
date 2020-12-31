@@ -27,11 +27,6 @@ void analyzer::getParameters(QString line)
       switch(i)
       {
         case(0):
-          pcklosschecker = 0;
-          if (pcktloss.size()>1 && word == qd && word == "r")
-            pcklosschecker = 1;
-          else
-            pcklosschecker = 0;
           qd = word;
           break;
         case(1):
@@ -39,8 +34,10 @@ void analyzer::getParameters(QString line)
             queued = word.toFloat();
           else if (qd == "-")
             dequeued = word.toFloat();
-          else
+          else if (qd == "r")
             received = word.toFloat();
+          else
+            dropped = word.toFloat();
           timeall = word.toFloat();
           break;
         case(2):
@@ -69,6 +66,10 @@ void analyzer::getParameters(QString line)
 
                     sentdatarec.resize(node_int+1);
                     recdatarec.resize(node_int+1);
+                    count_sent.resize(node_int+1);
+                    count_rec.resize(node_int+1);
+                    rec_avarage.resize(node_int+1);
+                    sent_avarage.resize(node_int+1);
                     lambda.resize(node_int+1) ;
                     throughput.resize(node_int+1) ;
                     goodput.resize(node_int+1) ;
@@ -86,8 +87,6 @@ void analyzer::getParameters(QString line)
               jitterSum[node_int] += jitter.at(node_int);
               jitterrec[node_int] = jitter.at(node_int);
               jitter[node_int] = received;
-              if (pcklosschecker == 1 && node_intchecker == node_int)
-                pcktloss[node_int] = pcktloss.at(node_int) + 1;
               node_intchecker = node_int;
             }
             else
@@ -119,6 +118,10 @@ void analyzer::getParameters(QString line)
                 node_intchecker = node_int;
 
                 sentdatarec.resize(node_int+1);
+                count_sent.resize(node_int+1);
+                count_rec.resize(node_int+1);
+                rec_avarage.resize(node_int+1);
+                sent_avarage.resize(node_int+1);
                 recdatarec.resize(node_int+1);
                 lambda.resize(node_int+1) ;
                 throughput.resize(node_int+1) ;
@@ -128,46 +131,106 @@ void analyzer::getParameters(QString line)
               }
             }
           }
+          else if (qd == "d")
+          {
+              if ((node_int)<nodelist.size())
+              {
+                  pcktloss[node_int] = pcktloss.at(node_int) + 1;
+              }
+              else
+              {
+
+                nodelist.resize((node_int+1));
+                nodelist[node_int] = node_int;
+
+                reclist.resize(node_int+1);
+                reclist[node_int] = 1;
+
+                jitter.resize(node_int+1);
+                jitterSum.resize(node_int+1);
+                jitterrec.resize(node_int+1);
+                jitter[node_int] = received;
+
+                pcktloss.resize(node_int+1);
+                pcktloss[node_int] = pcktloss.at(node_int) + 1;
+                node_intchecker = node_int;
+
+                sentdatarec.resize(node_int+1);
+                recdatarec.resize(node_int+1);
+                count_sent.resize(node_int+1);
+                count_rec.resize(node_int+1);
+                rec_avarage.resize(node_int+1);
+                sent_avarage.resize(node_int+1);
+                lambda.resize(node_int+1) ;
+                throughput.resize(node_int+1) ;
+                goodput.resize(node_int+1) ;
+
+
+              }
+          }
           break;
         case(27):
           totallength = word.toInt() +2;
           sizelength = totallength;
           if(qd == "+")
+          {
               sentdatarec[node_int] = sentdatarec[node_int]+ sizelength;
+              count_sent[node_int] = count_sent[node_int] + 1;
+              sent_avarage[node_int] = sentdatarec[node_int]/count_sent[node_int];
+              tst = sent_avarage[node_int];
+          }
           else if(qd == "r")
+          {
               recdatarec[node_int] = recdatarec[node_int]+ sizelength;
+              count_rec[node_int] = count_rec[node_int] + 1;
+              rec_avarage[node_int] = recdatarec[node_int]/count_rec[node_int];
+          }
+
+
           break;
 
+        case(31):
+           if (word == "ns3::TcpHeader")
+              tcp_checker = 1;
+           else
+               tcp_checker = 0;
+          break;
         case(38):
-          if(word != "Default")
+
+          if(tcp_checker == 1)
+          {
+              if(qd == "+")
+                {
+
+                  lambda[node_int] = float((((sentdatarec[node_int]))/((sent_avarage[node_int])))/(timeSimu));
+                  throughput[node_int] = float(lambda[node_int]*(sent_avarage[node_int]));
+                  goodput[node_int] = float(lambda[node_int]*(sent_avarage[node_int]-rec_avarage[node_int]));
+                  if(goodput[node_int]  < 0)
+                        goodput[node_int] = 0;
+                }
+          }
+
+          else if(word != "Default" )
             {
               const QRegExp rx(QLatin1Literal("[^0-9]+"));
               const auto&& parts = word.split(rx, QString::SkipEmptyParts);
+
               if(qd == "+")
-                {
-                  lambda[node_int] = float((((sentdatarec[node_int]))/((sizelength)))/(timeSimu));
-                  throughput[node_int] = float(lambda[node_int]*(totallength+2));
-                  goodput[node_int] = float(lambda[node_int]*(parts[0].toInt()));
-                }
-              if(qd=="r")
-                {
-                  lambda[node_int] = float((((sentdatarec[node_int]))/((sizelength)))/(timeSimu));
-                  throughput[node_int] = float(lambda[node_int]*(sizelength));
-                  goodput[node_int] = float(lambda[node_int]*(parts[0].toInt()));
-                }
+              {
+                lambda[node_int] = float((((sentdatarec[node_int]))/((sizelength)))/(timeSimu));
+                throughput[node_int] = float(lambda[node_int]*(sent_avarage[node_int]));
+                goodput[node_int] = float(lambda[node_int]*(parts[0].toInt()));
+              }
+
             }
           else
           {
               if(qd == "+")
                 {
-                  lambda[node_int] = float((((sentdatarec[node_int]))/((sizelength)))/(timeSimu));
-                  throughput[node_int] = float(lambda[node_int]*(totallength+2));
+                  lambda[node_int] = float((((sentdatarec[node_int]))/((sent_avarage[node_int])))/(timeSimu));
+                  throughput[node_int] = float(lambda[node_int]*(sent_avarage[node_int]));
                 }
-              if(qd=="r")
-                {
-                  lambda[node_int] = float((((sentdatarec[node_int]))/((sizelength)))/(timeSimu));
-                  throughput[node_int] = float(lambda[node_int]*(sizelength));
-                }
+
           }
 
 
@@ -244,9 +307,15 @@ void analyzer::getData(QFile *file)
      while (!in.atEnd())
      {
         QString line = in.readLine();
-        getParameters(line);
         timeSimu = line.split(" ").at(1).toFloat();
      }
+
+     in.seek(0);
+      while (!in.atEnd())
+      {
+         QString line = in.readLine();
+         getParameters(line);
+      }
 
 }
 

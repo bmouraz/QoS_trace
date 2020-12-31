@@ -27,6 +27,52 @@ MainWindow::~MainWindow()
 {
   delete ui;
 }
+
+void MainWindow::on_actionOpen_File_triggered()
+{
+  QString filename = QFileDialog::getOpenFileName(this,tr("Open File"),tr("/home/"),tr("Tracer File(*.tr)"));
+  arq = new QFile(filename);
+  if(arq->open(QFile::ReadOnly | QFile::Text))
+  {
+    alz = new analyzer(arq);
+    ui->actionChange_Scale_Log->setChecked(false);
+    ui->actionChange_Scale_Linear->setChecked(true);
+    ui->actionSubgrid->setChecked(false);
+    int aux = qtd_graph_variable;
+    for(int i=0;i<aux;i++)
+      {
+        qtd_graph_variable--;
+        qtd_graphs_vector.pop_front();
+      }
+    ui->customPlot->clearPlottables();
+    ui->customPlot->clearGraphs();
+    scale_checker = 0;
+    ui->customPlot->xAxis->setTicks(false);
+    ajust_table();
+    combobox_config();
+
+    // connect slot that ties some axis selections together (especially opposite axes):
+   connect(ui->customPlot, SIGNAL(selectionChangedByUser()), this, SLOT(selectionChanged()));
+   // connect slots that takes care that when an axis is selected, only that direction can be dragged and zoomed:
+   connect(ui->customPlot, SIGNAL(mousePress(QMouseEvent*)), this, SLOT(mousePress()));
+   connect(ui->customPlot, SIGNAL(mouseWheel(QWheelEvent*)), this, SLOT(mouseWheel()));
+
+   // make bottom and left axes transfer their ranges to top and right axes:
+   connect(ui->customPlot->xAxis, SIGNAL(rangeChanged(QCPRange)), ui->customPlot->xAxis2, SLOT(setRange(QCPRange)));
+   connect(ui->customPlot->yAxis, SIGNAL(rangeChanged(QCPRange)), ui->customPlot->yAxis2, SLOT(setRange(QCPRange)));
+
+
+   // setup policy and connect slot for context menu popup:
+   ui->customPlot->setContextMenuPolicy(Qt::CustomContextMenu);
+   connect(ui->customPlot, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextMenuRequest(QPoint)));
+
+
+
+
+
+
+  }
+}
 QVector<double> convert(QVector<float> in)
 {
 
@@ -457,51 +503,7 @@ void MainWindow::combobox_config()
 
 }
 
-void MainWindow::on_actionOpen_File_triggered()
-{
-  QString filename = QFileDialog::getOpenFileName(this,tr("Open File"),tr("/home/"),tr("Tracer File(*.tr)"));
-  arq = new QFile(filename);
-  if(arq->open(QFile::ReadOnly | QFile::Text))
-  {
-    alz = new analyzer(arq);
-    ui->actionChange_Scale_Log->setChecked(false);
-    ui->actionChange_Scale_Linear->setChecked(true);
-    ui->actionSubgrid->setChecked(false);
-    int aux = qtd_graph_variable;
-    for(int i=0;i<aux;i++)
-      {
-        qtd_graph_variable--;
-        qtd_graphs_vector.pop_front();
-      }
-    ui->customPlot->clearPlottables();
-    ui->customPlot->clearGraphs();
-    scale_checker = 0;
-    ui->customPlot->xAxis->setTicks(false);
-    ajust_table();
-    combobox_config();
 
-    // connect slot that ties some axis selections together (especially opposite axes):
-   connect(ui->customPlot, SIGNAL(selectionChangedByUser()), this, SLOT(selectionChanged()));
-   // connect slots that takes care that when an axis is selected, only that direction can be dragged and zoomed:
-   connect(ui->customPlot, SIGNAL(mousePress(QMouseEvent*)), this, SLOT(mousePress()));
-   connect(ui->customPlot, SIGNAL(mouseWheel(QWheelEvent*)), this, SLOT(mouseWheel()));
-
-   // make bottom and left axes transfer their ranges to top and right axes:
-   connect(ui->customPlot->xAxis, SIGNAL(rangeChanged(QCPRange)), ui->customPlot->xAxis2, SLOT(setRange(QCPRange)));
-   connect(ui->customPlot->yAxis, SIGNAL(rangeChanged(QCPRange)), ui->customPlot->yAxis2, SLOT(setRange(QCPRange)));
-
-
-   // setup policy and connect slot for context menu popup:
-   ui->customPlot->setContextMenuPolicy(Qt::CustomContextMenu);
-   connect(ui->customPlot, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(contextMenuRequest(QPoint)));
-
-
-
-
-
-
-  }
-}
 
 void MainWindow::on_comboBox_2_currentIndexChanged(int index)
 {
@@ -880,6 +882,7 @@ void MainWindow::on_actionSubgrid_triggered()
         ui->customPlot->yAxis->grid()->setSubGridVisible(false);
     }
     ui->customPlot->replot();
+
 }
 
 void MainWindow::on_actionChange_Xticks_triggered()

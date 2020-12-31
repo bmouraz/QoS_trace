@@ -41,9 +41,12 @@ private:
   //received time filtered from .tr file
   float received=0.0;
   float queued=0.0;
+  float dropped = 0.0;
   float dequeued=0.0;
   float timeSimu=0.0;
   float timeall=0.0;
+  int tst = 0;
+
 
   QVector <float> lambda ;
   QVector <float> throughput ;
@@ -51,15 +54,20 @@ private:
 
   QVector <int> nodelist;
   QVector <int> reclist;
+  QVector <int> sent_avarage;
+  QVector <int> rec_avarage;
   QVector <float> jitter;
   QVector <float> jitterSum;
   QVector <float> jitterrec;
   QVector <int> sentdatarec;
+  QVector <int> count_sent;
+  QVector <int> count_rec;
   QVector <int> recdatarec;
   QVector <QVector <float>> sentdata;
   QVector <int> pcktloss;
   QVector <QVector <float>> alldata;
   QString qd;
+  int tcp_checker = 0;
   int node_intchecker;
   QVector <int> search_node(int item, QString parameter);
 
