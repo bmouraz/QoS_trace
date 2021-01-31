@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/lines/line-dash.png</file>
+        <file>images/lines/line-dashdot.png</file>
+        <file>images/lines/line-dashdotdot.png</file>
+        <file>images/lines/line-dot.png</file>
+        <file>images/lines/line-solid.png</file>
+        <file>images/icon/edit_graph.png</file>
+        <file>images/icon/open-file.png</file>
+        <file>images/icon/save.png</file>
+        <file>images/icon/save_image.png</file>
+    </qresource>
+</RCC>
