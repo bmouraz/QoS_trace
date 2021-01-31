@@ -10,6 +10,7 @@ CustomLinesdialog::CustomLinesdialog(QWidget *parent) :
   ajust_LineStylecombo();
   ajust_ScatterStylecombo();
   ajust_Scatterslider();
+  ajust_linewidthslider();
 }
 
 CustomLinesdialog::~CustomLinesdialog()
@@ -29,32 +30,70 @@ QColor CustomLinesdialog::get_Color()
 
 void CustomLinesdialog::ajust_LineStylecombo()
 {
+  QPixmap solid(":/images/line-solid.png");
+
   ui->Line_Combo->clear();
-  ui->Line_Combo->addItem("Solid");
-  ui->Line_Combo->addItem("Dash");
-  ui->Line_Combo->addItem("Dash Dot");
-  ui->Line_Combo->addItem("Dash Dot Dot");
-  ui->Line_Combo->addItem("Dot");
+  ui->Line_Combo->addItem(QIcon(":/images/lines/line-solid.png"),"Solid");
+  ui->Line_Combo->addItem(QIcon(":/images/lines/line-dash.png"),"Dash");
+  ui->Line_Combo->addItem(QIcon(":/images/lines/line-dashdot.png"),"Dash Dot");
+  ui->Line_Combo->addItem(QIcon(":/images/lines/line-dashdotdot.png"),"Dash Dot Dot");
+  ui->Line_Combo->addItem(QIcon(":/images/lines/line-dot.png"),"Dot");
+
+  ui->Line_Combo->setIconSize(QSize(100,20));
 }
 
 void CustomLinesdialog::ajust_ScatterStylecombo()
 {
-  ui->scatter_Combo->clear();
-  ui->scatter_Combo->addItem("Cross");
-  ui->scatter_Combo->addItem("Plus");
-  ui->scatter_Combo->addItem("Circle");
-  ui->scatter_Combo->addItem("Disc");
-  ui->scatter_Combo->addItem("Square");
-  ui->scatter_Combo->addItem("Diamond");
-  ui->scatter_Combo->addItem("Star");
-  ui->scatter_Combo->addItem("Triangle");
-  ui->scatter_Combo->addItem("Inverted Triangle");
-  ui->scatter_Combo->addItem("Cross Square");
-  ui->scatter_Combo->addItem("Plus Square");
-  ui->scatter_Combo->addItem("Cross Circle");
-  ui->scatter_Combo->addItem("Plus Circle");
-  ui->scatter_Combo->addItem("Peace");
-  ui->scatter_Combo->addItem("Custom");
+    ui->scatter_Combo->clear();
+    QVector<QCPScatterStyle::ScatterShape> shapes;
+    QVector<QString> shapes_names;
+
+    shapes << QCPScatterStyle::ssCross;
+    shapes << QCPScatterStyle::ssPlus;
+    shapes << QCPScatterStyle::ssCircle;
+    shapes << QCPScatterStyle::ssDisc;
+    shapes << QCPScatterStyle::ssSquare;
+    shapes << QCPScatterStyle::ssDiamond;
+    shapes << QCPScatterStyle::ssStar;
+    shapes << QCPScatterStyle::ssTriangle;
+    shapes << QCPScatterStyle::ssTriangleInverted;
+    shapes << QCPScatterStyle::ssCrossSquare;
+    shapes << QCPScatterStyle::ssPlusSquare;
+    shapes << QCPScatterStyle::ssCrossCircle;
+    shapes << QCPScatterStyle::ssPlusCircle;
+    shapes << QCPScatterStyle::ssPeace;
+
+    shapes_names << "Cross";
+    shapes_names << "Plus";
+    shapes_names << "Circle";
+    shapes_names << "Disc";
+    shapes_names << "Square";
+    shapes_names << "Diamond";
+    shapes_names << "Star";
+    shapes_names << "Triangle";
+    shapes_names << "Inverted Triangle";
+    shapes_names << "Cross Square";
+    shapes_names << "Plus Square";
+    shapes_names << "Cross Circle";
+    shapes_names << "Plus Circle";
+    shapes_names << "Peace";
+
+
+    for(int i=0;i<shapes.count();i++)
+    {
+        // fill QComboBox
+
+        QCPScatterStyle ss = shapes.at(i);
+        QPixmap *pm = new QPixmap(15,15);
+        QCPPainter *qp = new QCPPainter(pm);
+        qp->fillRect(0,0,15,15,QBrush(Qt::white, Qt::SolidPattern));
+        ss.applyTo(qp, QPen(Qt::black));
+        ss.drawShape(qp,7,7);
+        QIcon   icon = QIcon(*pm);
+        ui->scatter_Combo->addItem(icon, shapes_names[i]);
+    }
+
+
 }
 
 
@@ -66,7 +105,8 @@ void CustomLinesdialog::on_radioButton_clicked(bool checked)
       ui->scatter_Slider->setEnabled(true);
       ui->ssize_Label->setEnabled(true);
       ui->sstyle_Label->setEnabled(true);
-
+      scatterstyleret = "Cross";
+      scattersizeret = 10;
     }
   else
     {
@@ -77,6 +117,7 @@ void CustomLinesdialog::on_radioButton_clicked(bool checked)
       scatterstyleret = "None";
       scattersizeret = 0;
     }
+
 }
 
 void CustomLinesdialog::on_Line_Combo_currentTextChanged(const QString &arg1)
@@ -86,7 +127,10 @@ void CustomLinesdialog::on_Line_Combo_currentTextChanged(const QString &arg1)
 
 void CustomLinesdialog::on_scatter_Combo_currentTextChanged(const QString &arg1)
 {
-    scatterstyleret = arg1;
+    if(ui->radioButton->isChecked())
+        scatterstyleret = arg1;
+    else
+        scatterstyleret = "None";
 }
 
 void CustomLinesdialog::ajust_Scatterslider()
@@ -143,8 +187,31 @@ int CustomLinesdialog::getgraphindex()
 {
   return graphindex;
 }
+
+void CustomLinesdialog::ajust_linewidthslider()
+{
+    ui->linewidthSlider->setTickInterval(2);
+    ui->linewidthSlider->setMinimum(0);
+    ui->linewidthSlider->setValue(0);
+    linewidthret = 0;
+    ui->linewidthSlider->setMaximum(8);
+}
+
+
 void CustomLinesdialog::on_graph_Combo_currentIndexChanged(int index)
 {
     if (index>-1)
       graphindex = index;
+}
+
+
+
+void CustomLinesdialog::on_linewidthSlider_sliderMoved(int position)
+{
+    linewidthret = position;
+}
+
+int CustomLinesdialog::get_linewidth()
+{
+    return linewidthret;
 }

@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include<QColorDialog>
+#include "qcustomplot.h"
 
 namespace Ui {
   class CustomLinesdialog;
@@ -21,6 +22,7 @@ public:
   int get_ScatterSize();
   void ajust_Graphcombo(QVector<int> graphs);
   int getgraphindex();
+  int get_linewidth();
 
 private slots:
   void on_color_Button_clicked();
@@ -39,6 +41,8 @@ private slots:
 
   void on_graph_Combo_currentIndexChanged(int index);
 
+  void on_linewidthSlider_sliderMoved(int position);
+
 private:
   Ui::CustomLinesdialog *ui;
   QColor color;
@@ -46,9 +50,11 @@ private:
   QString scatterstyleret;
   int scattersizeret = 0;
   int graphindex = 0;
+  int linewidthret = 0;
   void ajust_LineStylecombo();
   void ajust_ScatterStylecombo();
   void ajust_Scatterslider();
+  void ajust_linewidthslider();
 };
 
 #endif // CUSTOMLINESDIALOG_H
