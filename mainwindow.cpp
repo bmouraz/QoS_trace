@@ -146,10 +146,15 @@ void MainWindow::makePlot()
       parameters = convert(alz->getVector(node,parameter));
     //   create graph and assign data to it:
       ui->customPlot->addGraph();
-
+      QString graph_name;
+      if(node == ui->comboBox_2->count()-1)
+        graph_name.append(parameter + " Average");
+      else
+        graph_name.append(parameter + " x" +" Node " + QString::number(node));
+      ui->customPlot->graph()->setName(graph_name);
       ui->customPlot->graph()->setData(time, parameters);
       qtd_graph_variable++;
-      qtd_graphs_vector.push_back(qtd_graph_variable-1);
+      qtd_graphs_vector.push_back(graph_name);
       QPen pen;
       pen.setWidth(1);
       ui->customPlot->graph(qtd_graph_variable-1)->setScatterStyle(QCPScatterStyle::ssNone);
@@ -655,6 +660,8 @@ void MainWindow::combobox_config()
          ui->comboBox_4->addItem(nodes);
         }
 
+      ui->comboBox_2->addItem("Average");
+
       ui->comboBox->addItem("Lambda");
       ui->comboBox->addItem("Throughput");
       ui->comboBox->addItem("Goodput");
@@ -689,7 +696,6 @@ void MainWindow::on_comboBox_2_currentIndexChanged(int index)
   {
     makePlot();
   }
-
 }
 
 void MainWindow::on_comboBox_4_currentIndexChanged(int index)

@@ -321,10 +321,180 @@ void analyzer::getData(QFile *file)
 
 QVector<float> analyzer::getVector(int node, QString parameter)
 {
+  QVector<float> parameters;
+  if(node == nodelist.size())
+  {
+      float time_aux = alldata[0][1];
+      float parameter_aux=0.0;
+      int counter_aux = 0;
+      if (QString::compare(parameter, "Lambda", Qt::CaseInsensitive) == 0)
+        {
+          for(int i = 0; i<alldata.size();i++)
+            {
 
+                if(time_aux == alldata[i][1])
+                {
+                    counter_aux++;
+                    parameter_aux = parameter_aux + alldata[i][6];
+                }
+
+                else
+                {
+
+                    parameters.push_back(parameter_aux/counter_aux);
+                    time_aux = alldata[i][1];
+                    counter_aux = 0;
+                }
+            }
+        }
+      if (QString::compare(parameter, "Throughput", Qt::CaseInsensitive) == 0)
+        {
+              for(int i = 0; i<alldata.size();i++)
+                {
+
+                    if(time_aux == alldata[i][1])
+                    {
+                        counter_aux++;
+                        parameter_aux = parameter_aux + alldata[i][7];
+                    }
+
+                    else
+                    {
+
+                        parameters.push_back(parameter_aux/counter_aux);
+                        time_aux = alldata[i][1];
+                        counter_aux = 0;
+                    }
+                }
+        }
+      if (QString::compare(parameter, "Goodput", Qt::CaseInsensitive) == 0)
+        {
+
+              for(int i = 0; i<alldata.size();i++)
+                {
+
+                    if(time_aux == alldata[i][1])
+                    {
+                        counter_aux++;
+                        parameter_aux = parameter_aux + alldata[i][8];
+                    }
+
+                    else
+                    {
+
+                        parameters.push_back(parameter_aux/counter_aux);
+                        time_aux = alldata[i][1];
+                        counter_aux = 0;
+                    }
+                }
+        }
+      if (QString::compare(parameter, "Sent Data", Qt::CaseInsensitive) == 0)
+        {
+              for(int i = 0; i<alldata.size();i++)
+                {
+
+                    if(time_aux == alldata[i][1])
+                    {
+                        counter_aux++;
+                        parameter_aux = parameter_aux + alldata[i][2];
+                    }
+
+                    else
+                    {
+
+                        parameters.push_back(parameter_aux/counter_aux);
+                        time_aux = alldata[i][1];
+                        counter_aux = 0;
+                    }
+                }
+        }
+      if (QString::compare(parameter, "Jitter", Qt::CaseInsensitive) == 0)
+        {
+              for(int i = 0; i<alldata.size();i++)
+                {
+
+                    if(time_aux == alldata[i][1])
+                    {
+                        counter_aux++;
+                        parameter_aux = parameter_aux + data_filtered[i][2];
+                    }
+
+                    else
+                    {
+
+                        parameters.push_back(parameter_aux/counter_aux);
+                        time_aux = alldata[i][1];
+                        counter_aux = 0;
+                    }
+                }
+        }
+      if (QString::compare(parameter, "Jitter Sum", Qt::CaseInsensitive) == 0)
+        {
+          for(int i = 0; i<alldata.size();i++)
+            {
+
+                if(time_aux == alldata[i][1])
+                {
+                    counter_aux++;
+                    parameter_aux = parameter_aux + alldata[i][4];
+                }
+
+                else
+                {
+
+                    parameters.push_back(parameter_aux/counter_aux);
+                    time_aux = alldata[i][1];
+                    counter_aux = 0;
+                }
+            }
+        }
+      if (QString::compare(parameter, "Dropped Packets", Qt::CaseInsensitive) == 0)
+        {
+          for(int i = 0; i<alldata.size();i++)
+            {
+
+                if(time_aux == alldata[i][1])
+                {
+                    counter_aux++;
+                    parameter_aux = parameter_aux + alldata[i][5];
+                }
+
+                else
+                {
+
+                    parameters.push_back(parameter_aux/counter_aux);
+                    time_aux = alldata[i][1];
+                    counter_aux = 0;
+                }
+            }
+        }
+      if (QString::compare(parameter, "Received Data", Qt::CaseInsensitive) == 0)
+        {
+          for(int i = 0; i<alldata.size();i++)
+            {
+
+                if(time_aux == alldata[i][1])
+                {
+                    counter_aux++;
+                    parameter_aux = parameter_aux + alldata[i][3];
+                }
+
+                else
+                {
+
+                    parameters.push_back(parameter_aux/counter_aux);
+                    time_aux = alldata[i][1];
+                    counter_aux = 0;
+                }
+            }
+        }
+  }
+
+  else
+  {
   QVector<int> nodes =  search_node(node,parameter);
 
-  QVector<float> parameters;
+
   if (QString::compare(parameter, "Lambda", Qt::CaseInsensitive) == 0)
     {
       for(int i = 0; i<nodes.size();i++)
@@ -373,25 +543,45 @@ QVector<float> analyzer::getVector(int node, QString parameter)
       for(int i = 0; i<nodes.size();i++)
         parameters.push_back(data_filtered[i][6]);
     }
+  }
   return parameters;
 }
 
 QVector<float> analyzer::getTime (int node, QString parameter)
 {
-  QVector<int> nodes =  search_node(node, parameter);
-  QVector<float> time;
-  if (QString::compare(parameter, "Lambda", Qt::CaseInsensitive) == 0 || QString::compare(parameter, "Throughput", Qt::CaseInsensitive) == 0
-                                                                      || QString::compare(parameter, "Sent Data", Qt::CaseInsensitive) == 0)
-    {
-      for(int i = 0; i<nodes.size();i++)
-          time.push_back(sentdata[i][1]);
-    }
-  else
-  {
-    for(int i = 0; i<nodes.size();i++)
-        time.push_back(data_filtered[i][1]);
-  }
 
+  QVector<float> time;
+  if(node == nodelist.size())
+  {
+    float time_aux = alldata[0][1];
+    for(int i = 0; i<alldata.size(); i++)
+    {
+        if(time_aux == alldata[i][1])
+        {}
+        else
+        {
+
+            time.push_back(alldata[i-1][1]);
+            time_aux = alldata[i][1];
+        }
+
+    }
+  }
+  else{
+   QVector<int> nodes =  search_node(node, parameter);
+
+      if (QString::compare(parameter, "Lambda", Qt::CaseInsensitive) == 0 || QString::compare(parameter, "Throughput", Qt::CaseInsensitive) == 0
+                                                                          || QString::compare(parameter, "Sent Data", Qt::CaseInsensitive) == 0)
+        {
+          for(int i = 0; i<nodes.size();i++)
+              time.push_back(sentdata[i][1]);
+        }
+      else
+      {
+        for(int i = 0; i<nodes.size();i++)
+            time.push_back(data_filtered[i][1]);
+      }
+  }
   return time;
 }
 

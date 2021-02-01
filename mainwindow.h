@@ -76,7 +76,7 @@ private slots:
 
 private:
 
-  QVector <int> qtd_graphs_vector;
+  QVector <QString> qtd_graphs_vector;
   int qtd_graph_variable=0;
   int node,node_bar;
   int count_file_entries = 0;

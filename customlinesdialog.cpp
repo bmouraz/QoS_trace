@@ -174,12 +174,12 @@ void CustomLinesdialog::on_ok_cancel_apply_buttons_rejected()
   this->setResult(QDialog::Rejected);
 }
 
-void CustomLinesdialog::ajust_Graphcombo(QVector<int> graphs)
+void CustomLinesdialog::ajust_Graphcombo(QVector<QString> graphs)
 {
   ui->graph_Combo->clear();
   for(int i =0;i<graphs.size();i++)
     {
-      ui->graph_Combo->addItem(QString::number(graphs.at(i)));
+      ui->graph_Combo->addItem(graphs.at(i));
     }
 }
 

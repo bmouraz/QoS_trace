@@ -20,7 +20,7 @@ public:
   QString get_LineStyle();
   QString get_ScatterStyle();
   int get_ScatterSize();
-  void ajust_Graphcombo(QVector<int> graphs);
+  void ajust_Graphcombo(QVector<QString> graphs);
   int getgraphindex();
   int get_linewidth();
 
