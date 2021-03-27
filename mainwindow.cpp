@@ -12,7 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
     qtd_graphs_vector.clear();
     qtd_graph_variable = 0;
     on_actionWhite_triggered();
-
+    close_rectangle = 0;
 
 }
 
@@ -66,14 +66,7 @@ void MainWindow::on_actionOpen_File_triggered()
         ui->actionSubgrid->setCheckable(true);
         ui->actionBlack->setCheckable(true);
         ui->actionWhite->setCheckable(true);
-        ui->customPlot->xAxis2->setVisible(true);
-        ui->customPlot->yAxis2->setVisible(true);
-        ui->customPlot->xAxis2->setTickLabels(false);
-        ui->customPlot->yAxis2->setTickLabels(false);
-        ui->customPlot_bars->xAxis2->setVisible(true);
-        ui->customPlot_bars->yAxis2->setVisible(true);
-        ui->customPlot_bars->xAxis2->setTickLabels(false);
-        ui->customPlot_bars->yAxis2->setTickLabels(false);
+
 
         // connect slot that ties some axis selections together (especially opposite axes):
        connect(ui->customPlot, SIGNAL(selectionChangedByUser()), this, SLOT(selectionChanged()));
@@ -1197,4 +1190,33 @@ void MainWindow::on_actionStatistics_Results_triggered()
     else
         dialog->setStyleSheet("background-color: rgb(200, 200, 200)");
     dialog->exec();
+}
+
+void MainWindow::on_actionClose_Rectangle_triggered()
+{
+    if(close_rectangle == 1)
+    {
+        ui->customPlot->xAxis2->setVisible(false);
+        ui->customPlot->yAxis2->setVisible(false);
+        ui->customPlot->xAxis2->setTickLabels(false);
+        ui->customPlot->yAxis2->setTickLabels(false);
+        ui->customPlot_bars->xAxis2->setVisible(false);
+        ui->customPlot_bars->yAxis2->setVisible(false);
+        ui->customPlot_bars->xAxis2->setTickLabels(false);
+        ui->customPlot_bars->yAxis2->setTickLabels(false);
+        close_rectangle = 0;
+    }
+    else
+    {
+        ui->customPlot->xAxis2->setVisible(true);
+        ui->customPlot->yAxis2->setVisible(true);
+        ui->customPlot->xAxis2->setTickLabels(false);
+        ui->customPlot->yAxis2->setTickLabels(false);
+        ui->customPlot_bars->xAxis2->setVisible(true);
+        ui->customPlot_bars->yAxis2->setVisible(true);
+        ui->customPlot_bars->xAxis2->setTickLabels(false);
+        ui->customPlot_bars->yAxis2->setTickLabels(false);
+        close_rectangle = 1;
+    }
+    ui->customPlot->replot();
 }

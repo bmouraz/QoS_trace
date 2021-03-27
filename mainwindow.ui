@@ -317,6 +317,7 @@
     <addaction name="actionSubgrid"/>
     <addaction name="actionChange_Xticks"/>
     <addaction name="actionStatistics_Results"/>
+    <addaction name="actionClose_Rectangle"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuGraph"/>
@@ -338,6 +339,7 @@
    <addaction name="actionExport_File"/>
    <addaction name="actionSave_Graph_2"/>
    <addaction name="actionLine_Style_Scatter_Color"/>
+   <addaction name="actionClose_Rectangle"/>
   </widget>
   <action name="actionOpen_File">
    <property name="icon">
@@ -430,6 +432,15 @@
   <action name="actionStatistics_Results">
    <property name="text">
     <string>Statistics (Results)</string>
+   </property>
+  </action>
+  <action name="actionClose_Rectangle">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/images/icon/Parallelogon_rectangle.png</normaloff>:/images/icon/Parallelogon_rectangle.png</iconset>
+   </property>
+   <property name="text">
+    <string>Close/Open Rectangle</string>
    </property>
   </action>
  </widget>

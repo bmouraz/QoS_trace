@@ -80,6 +80,8 @@ private slots:
 
   void on_actionStatistics_Results_triggered();
 
+  void on_actionClose_Rectangle_triggered();
+
 private:
 
   QVector <QString> qtd_graphs_vector;
@@ -89,9 +91,6 @@ private:
   void dark_interface();
   void set_Scatter(QString scatter, int graph_index,int scatterSize);
 
-  enum Coluna{
-      NODE, LAMBDA, THROUGHPUT,GOODPUT,SENTDATA,JITTERSUM,DROPPED
-  };
   int scale_checker = 0;
   int chart_checker = 0; //if 0 - line 1 - bar
   int ticker_spacing_x = 5;
@@ -99,6 +98,7 @@ private:
   QString parameter,parameter_bar;
   QString directory;
   analyzer *alz;
+  int close_rectangle;
   QFile *arq;
   Ui::MainWindow *ui;
 };
