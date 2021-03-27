@@ -26,23 +26,29 @@ CONFIG += c++11
 
 SOURCES += \
         analyzer.cpp \
+        axis_inputdialog.cpp \
         customlinesdialog.cpp \
         inputicksdialog.cpp \
         main.cpp \
         mainwindow.cpp \
-        qcustomplot.cpp
+        qcustomplot.cpp \
+        table_dialog.cpp
 
 HEADERS += \
         analyzer.h \
+        axis_inputdialog.h \
         customlinesdialog.h \
         inputicksdialog.h \
         mainwindow.h \
-        qcustomplot.h
+        qcustomplot.h \
+        table_dialog.h
 
 FORMS += \
+        axis_inputdialog.ui \
         customlinesdialog.ui \
         inputicksdialog.ui \
-        mainwindow.ui
+        mainwindow.ui \
+        table_dialog.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

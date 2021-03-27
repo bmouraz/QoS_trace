@@ -1,7 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include <QDialog>
-#include <QTableWidget>
+
 
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent),
@@ -47,7 +46,6 @@ void MainWindow::on_actionOpen_File_triggered()
 
         scale_checker = 0;
         ui->customPlot->xAxis->setTicks(false);
-        ajust_table();
         combobox_config();
         ui->customPlot->plotLayout()->insertRow(0);
         ui->customPlot_bars->plotLayout()->insertRow(0);
@@ -68,6 +66,14 @@ void MainWindow::on_actionOpen_File_triggered()
         ui->actionSubgrid->setCheckable(true);
         ui->actionBlack->setCheckable(true);
         ui->actionWhite->setCheckable(true);
+        ui->customPlot->xAxis2->setVisible(true);
+        ui->customPlot->yAxis2->setVisible(true);
+        ui->customPlot->xAxis2->setTickLabels(false);
+        ui->customPlot->yAxis2->setTickLabels(false);
+        ui->customPlot_bars->xAxis2->setVisible(true);
+        ui->customPlot_bars->yAxis2->setVisible(true);
+        ui->customPlot_bars->xAxis2->setTickLabels(false);
+        ui->customPlot_bars->yAxis2->setTickLabels(false);
 
         // connect slot that ties some axis selections together (especially opposite axes):
        connect(ui->customPlot, SIGNAL(selectionChangedByUser()), this, SLOT(selectionChanged()));
@@ -119,7 +125,6 @@ void MainWindow::on_actionOpen_File_triggered()
         ui->customPlot->clearGraphs();
         scale_checker = 0;
         ui->customPlot->xAxis->setTicks(false);
-        ajust_table();
         combobox_config();
 
 
@@ -308,12 +313,40 @@ void MainWindow::axisLabelDoubleClick(QCPAxis *axis, QCPAxis::SelectablePart par
   // Set an axis label by double clicking on it
   if (part == QCPAxis::spAxisLabel) // only react when the actual axis label is clicked, not tick label or axis backbone
   {
-    bool ok;
-    QString newLabel = QInputDialog::getText(this, "Change axis label", "New axis label:", QLineEdit::Normal, axis->label(), &ok);
-    if (ok)
+    axis_inputDialog *dialog = new axis_inputDialog(axis->label(),axis->axisType());
+    if (ui->actionBlack->isChecked())
+        dialog->setStyleSheet("background-color: rgb(50, 50, 50)");
+    else
+        dialog->setStyleSheet("background-color: rgb(200, 200, 200)");
+    dialog->exec();
+    if(dialog->result())
     {
-      axis->setLabel(newLabel);
-      ui->customPlot->replot();
+        if(axis->axisType() == dialog->get_position())
+        {
+            axis->setLabel(dialog->get_new_label());
+        }
+        else
+        {
+            axis->setLabel("");
+            if(dialog->get_position() == 1)
+            {
+                ui->customPlot->yAxis->setLabel(dialog->get_new_label());
+            }
+            else if(dialog->get_position() == 2)
+            {
+                ui->customPlot->yAxis2->setLabel(dialog->get_new_label());
+            }
+            else if(dialog->get_position() == 4)
+            {
+                ui->customPlot->xAxis2->setLabel(dialog->get_new_label());
+            }
+            else
+            {
+                ui->customPlot->xAxis->setLabel(dialog->get_new_label());
+            }
+
+        }
+        ui->customPlot->replot();
     }
   }
 }
@@ -993,53 +1026,6 @@ void MainWindow::on_actionLine_Style_Scatter_Color_triggered()
 
 }
 
-void MainWindow::ajust_table()
-{
-  QStringList header;
-  ui->orderTable->setColumnCount(7);
-  ui->orderTable->setRowCount(0);
-  header << "Node" << "Lambda" << "Throughput"<<"Goodput"<<"Sent Data"<<"Jitter Sum"<<"Dropped Packets";
-  ui->orderTable->setHorizontalHeaderLabels(header);
-
-  // insere linha a linha os valores da tabela
-  for(int i=0; i<alz->getNodes().size();i++){
-      ui->orderTable->insertRow(ui->orderTable->rowCount());
-      int currentLine = ui->orderTable->rowCount() -1;
-
-      QTableWidgetItem* itemnode = new QTableWidgetItem;
-      itemnode->setData(Qt::DisplayRole,i);
-      ui->orderTable->setItem(currentLine,NODE,itemnode);
-
-      QTableWidgetItem* itemlambda = new QTableWidgetItem;
-      itemlambda->setData(Qt::DisplayRole,(alz->getLambda(i)));
-      ui->orderTable->setItem(currentLine,LAMBDA,itemlambda);
-
-      QTableWidgetItem* itemthrpt = new QTableWidgetItem;
-      itemthrpt->setData(Qt::DisplayRole,(alz->getThrpt(i)));
-      ui->orderTable->setItem(currentLine,THROUGHPUT,itemthrpt);
-
-      QTableWidgetItem* itemgood = new QTableWidgetItem;
-      itemgood->setData(Qt::DisplayRole,(alz->getGood(i)));
-      ui->orderTable->setItem(currentLine,GOODPUT,itemgood);
-
-      QTableWidgetItem* itemsent = new QTableWidgetItem;
-      int senttotal = alz->getSentDatatotal(i);
-      itemsent->setData(Qt::DisplayRole,(senttotal));
-      ui->orderTable->setItem(currentLine,SENTDATA,itemsent);
-
-
-      QTableWidgetItem* itemjitter = new QTableWidgetItem;
-      itemjitter->setData(Qt::DisplayRole,(alz->getJitterSum(i)));
-      ui->orderTable->setItem(currentLine,JITTERSUM,itemjitter);
-
-      QTableWidgetItem* itemdropped = new QTableWidgetItem;
-      itemdropped->setData(Qt::DisplayRole,(alz->getPckt(i)));
-      ui->orderTable->setItem(currentLine,DROPPED,itemdropped);
-
-  }
-  ui->orderTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-}
-
 void MainWindow::on_actionExport_File_triggered()
 {
     QString selectedFilter;
@@ -1059,52 +1045,6 @@ void MainWindow::on_actionExport_File_triggered()
 
 }
 
-void MainWindow::on_pushButton_clicked()
-{
-    QString filename = QFileDialog::getSaveFileName(this,tr("Open File"),tr("/home/"),tr("PDF files (*.pdf)"));
-    const int columns = ui->orderTable->columnCount();
-    const int rows = ui->orderTable->rowCount();
-    QTextDocument doc;
-    QTextCursor cursor(&doc);
-    QTextTableFormat tableFormat;
-    tableFormat.setHeaderRowCount(1);
-    tableFormat.setAlignment(Qt::AlignHCenter);
-    tableFormat.setCellPadding(0);
-    tableFormat.setCellSpacing(0);
-    tableFormat.setBorder(1);
-    tableFormat.setBorderBrush(QBrush(Qt::SolidPattern));
-    tableFormat.clearColumnWidthConstraints();
-    QTextTable *textTable = cursor.insertTable(rows + 1, columns, tableFormat);
-    QTextCharFormat tableHeaderFormat;
-    tableHeaderFormat.setBackground(QColor("#DADADA"));
-    for (int i = 0; i < columns; i++) {
-        QTextTableCell cell = textTable->cellAt(0, i);
-        cell.setFormat(tableHeaderFormat);
-        QTextCursor cellCursor = cell.firstCursorPosition();
-        cellCursor.insertText(ui->orderTable->horizontalHeaderItem(i)->data(Qt::DisplayRole).toString());
-    }
-    for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < columns; j++) {
-            QTableWidgetItem *item = ui->orderTable->item(i, j);
-            if (!item || item->text().isEmpty()) {
-                ui->orderTable->setItem(i, j, new QTableWidgetItem("0"));
-            }
-
-            QTextTableCell cell = textTable->cellAt(i+1, j);
-            QTextCursor cellCursor = cell.firstCursorPosition();
-            cellCursor.insertText(ui->orderTable->item(i, j)->text());
-        }
-    }
-    cursor.movePosition(QTextCursor::End);
-    QPrinter printer(QPrinter::PrinterResolution);
-    printer.setOutputFormat(QPrinter::PdfFormat);
-    printer.setPaperSize(QPrinter::A4);
-    printer.setOrientation(QPrinter::Landscape);
-    printer.setOutputFileName(filename);
-    doc.setDocumentMargin(0);
-    doc.setTextWidth(5);
-    doc.print(&printer);
-}
 
 void MainWindow::on_actionChange_Scale_Log_triggered()
 {
@@ -1246,4 +1186,15 @@ void MainWindow::on_actionWhite_triggered()
     this->setStyleSheet("background-color: rgb(200,200,200)");
     ui->actionBlack->setChecked(true);
     ui->actionWhite->setChecked(false);
+}
+
+
+void MainWindow::on_actionStatistics_Results_triggered()
+{
+    table_dialog *dialog = new table_dialog(alz);
+    if (ui->actionBlack->isChecked())
+        dialog->setStyleSheet("background-color: rgb(50, 50, 50)");
+    else
+        dialog->setStyleSheet("background-color: rgb(200, 200, 200)");
+    dialog->exec();
 }

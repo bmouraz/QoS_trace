@@ -3,10 +3,15 @@
 
 #include <QMainWindow>
 #include<QColorDialog>
+#include <QDialog>
+#include <QTableWidget>
+#include <QTabWidget>
 #include"customlinesdialog.h"
+#include"axis_inputdialog.h"
 #include "qcustomplot.h"
 #include "inputicksdialog.h"
 #include "analyzer.h"
+#include "table_dialog.h"
 
 namespace Ui {
   class MainWindow;
@@ -42,7 +47,6 @@ private slots:
 
   void on_actionExport_File_triggered();
 
-  void on_pushButton_clicked();
 
   void on_actionChange_Scale_Log_triggered();
 
@@ -74,6 +78,8 @@ private slots:
 
   void on_comboBox_4_currentIndexChanged(int index);
 
+  void on_actionStatistics_Results_triggered();
+
 private:
 
   QVector <QString> qtd_graphs_vector;
@@ -82,7 +88,7 @@ private:
   int count_file_entries = 0;
   void dark_interface();
   void set_Scatter(QString scatter, int graph_index,int scatterSize);
-  void ajust_table();
+
   enum Coluna{
       NODE, LAMBDA, THROUGHPUT,GOODPUT,SENTDATA,JITTERSUM,DROPPED
   };
