@@ -14,6 +14,14 @@
 #include <sstream>
 #include <algorithm>
 
+#include "xlsxdocument.h"
+#include "xlsxchartsheet.h"
+#include "xlsxcellrange.h"
+#include "xlsxchart.h"
+#include "xlsxrichstring.h"
+#include "xlsxworkbook.h"
+using namespace QXlsx;
+
 using namespace std;
 class analyzer
 {

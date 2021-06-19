@@ -1022,18 +1022,15 @@ void MainWindow::on_actionLine_Style_Scatter_Color_triggered()
 void MainWindow::on_actionExport_File_triggered()
 {
     QString selectedFilter;
-    QString filename = QFileDialog::getSaveFileName(this,tr("Open File"),tr("/home/"),tr("CSV(,) files (*.csv);;PRN files (*.prn);; CSV files(;) (*.tsv)"), &selectedFilter);
+    QString filename = QFileDialog::getSaveFileName(this,tr("Open File"),tr("/home/"),tr("CSV(;) files (*.csv);;Excel files (*.xlsx)"), &selectedFilter);
 
     if (!filename.isEmpty())
     {
-      if(QString::compare(selectedFilter, "CSV(,) files (*.csv)", Qt::CaseInsensitive) == 0)
+      if(QString::compare(selectedFilter, "CSV(;) files (*.csv)", Qt::CaseInsensitive) == 0)
         alz->transform2file("csv",filename+".csv");
-      else if(QString::compare(selectedFilter, "PRN files (*.prn)", Qt::CaseInsensitive) == 0)
-        alz->transform2file("prn",filename+".prn");
       else
-      {
-        alz->transform2file("csv",filename+".csv");
-      }
+        alz->transform2file("xlsx",filename+".xlsx");
+
     }
 
 }
