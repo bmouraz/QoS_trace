@@ -1022,7 +1022,7 @@ void MainWindow::on_actionLine_Style_Scatter_Color_triggered()
 void MainWindow::on_actionExport_File_triggered()
 {
     QString selectedFilter;
-    QString filename = QFileDialog::getSaveFileName(this,tr("Open File"),tr("/home/"),tr("CSV(;) files (*.csv);;Excel files (*.xlsx)"), &selectedFilter);
+    QString filename = QFileDialog::getSaveFileName(this,tr("Open File"),tr("/home/"),tr("CSV(;) files (*.csv);;XLSX files (*.xlsx)"), &selectedFilter);
 
     if (!filename.isEmpty())
     {
