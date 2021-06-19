@@ -637,36 +637,38 @@ void analyzer::transform2file(QString type, QString filename)
             QTextStream datafile(&file);
             header.flush();
             datafile.flush();
-            header<<"Node,Time,Sent,Received,JitterSum,PcktLoss,Lambda,Throughput,Goodput"<<endl;
+            header<<"Node;Time;Sent;Received;JitterSum;PcktLoss;Lambda;Throughput;Goodput"<<endl;
             for(int i = 0; i<alldata.size();i++)
             {
-                datafile<<alldata[i][0]<<","<<alldata[i][1]<<","<<alldata[i][2]<<","<<alldata[i][3]<<","<<alldata[i][4]<<","<<alldata[i][5]<<","<<alldata[i][6]<<","<<alldata[i][7]<<","<<alldata[i][8]<<","<<endl;
-            }
-            file.close();
-        }
-        else if (type == "prn")
-        {
-            QTextStream header(&file);
-            QTextStream datafile(&file);
-            header.flush();
-            datafile.flush();
-            header<<"Node Time Sent Received JitterSum PcktLoss Lambda Throughput Goodput"<<endl;
-            for(int i = 0; i<alldata.size();i++)
-            {
-                datafile<<alldata[i][0]<<" "<<alldata[i][1]<<" "<<alldata[i][2]<<" "<<alldata[i][3]<<" "<<alldata[i][4]<<" "<<alldata[i][5]<<" "<<alldata[i][6]<<" "<<alldata[i][7]<<" "<<alldata[i][8]<<" "<<endl;
+               datafile<<alldata[i][0]<<";"<<alldata[i][1]<<";"<<alldata[i][2]<<";"<<alldata[i][3]<<";"<<alldata[i][4]<<";"<<alldata[i][5]<<";"<<alldata[i][6]<<";"<<alldata[i][7]<<";"<<alldata[i][8]<<";"<<endl;
             }
             file.close();
         }
         else
         {
-            QTextStream header(&file);
-            QTextStream datafile(&file);
-            header<<"Node;Time;Sent;Received;JitterSum;PcktLoss;Lambda;Throughput;Goodput"<<endl;
-            for(int i = 0; i<alldata.size();i++)
+            Document xlsx;
+            xlsx.write(1, 1, "Node");       //A
+            xlsx.write(1, 2, "Time");       //B
+            xlsx.write(1, 3, "Sent");       //C
+            xlsx.write(1, 4, "Received");   //D
+            xlsx.write(1, 5, "JitterSum");  //E
+            xlsx.write(1, 6, "PcktLoss");   //F
+            xlsx.write(1, 7, "Lambda");     //G
+            xlsx.write(1, 8, "Throughput"); //H
+            xlsx.write(1, 9, "Goodput");    //I
+            for (int i=2; i<alldata.size()+2; i++)
             {
-                datafile<<alldata[i][0]<<";"<<alldata[i][1]<<";"<<alldata[i][2]<<";"<<alldata[i][3]<<";"<<alldata[i][4]<<";"<<alldata[i][5]<<";"<<alldata[i][6]<<";"<<alldata[i][7]<<";"<<alldata[i][8]<<";"<<endl;
+                xlsx.write(i, 1, alldata[i-2][0]);       //A
+                xlsx.write(i, 2, alldata[i-2][1]);       //B
+                xlsx.write(i, 3, alldata[i-2][2]);       //C
+                xlsx.write(i, 4, alldata[i-2][3]);       //D
+                xlsx.write(i, 5, alldata[i-2][4]);       //E
+                xlsx.write(i, 6, alldata[i-2][5]);       //F
+                xlsx.write(i, 7, alldata[i-2][6]);       //G
+                xlsx.write(i, 8, alldata[i-2][7]);       //H
+                xlsx.write(i, 9, alldata[i-2][8]);       //I
             }
-            file.close();
+            xlsx.saveAs(filename);
         }
     }
 
