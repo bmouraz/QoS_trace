@@ -9,6 +9,7 @@ A software that analyzes data from NS-3 output (.tr - tracer file).
 The next repositories are needed:
 
 ```
+sudo apt install build-essential
 sudo apt install qtbase5-dev
 sudo apt install qtdeclarative5-dev
 sudo apt install qtmultimedia5-dev

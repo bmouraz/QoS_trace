@@ -7,6 +7,7 @@ inputicksDialog::inputicksDialog( int x, int y,QWidget *parent) :
     ui(new Ui::inputicksDialog)
 {
     ui->setupUi(this);
+    this->setWindowTitle("Input Ticks");
     ui->XlineEdit->setValidator(new QDoubleValidator(1, 10000, 2, this));
     ui->YlineEdit->setValidator(new QDoubleValidator(1, 100000000, 2, this));
     xticks = x;

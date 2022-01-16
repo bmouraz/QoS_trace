@@ -249,7 +249,7 @@ void MainWindow::makePlot()
         bar_node->setStackingGap(1);
         bar_node->setName(parameter_bar);
         QVector<QString> labels;
-        labels<<"Lambda"<<"Throughput"<<"Goodput"<<"Sent Data"<<"Received Data"<<"Jitter Sum"<<"Dropped Packets";
+        labels<<"Lambda"<<"Throughput"<<"Goodput"<<"Sent Data"<<"Received Data"<<"Jitter Avg"<<"Delay Avg"<<"Dropped Packets";
         QVector<double> ticks;
         QVector<double> bar_nodedata;
         for(int i = 0; i<alz->getValues_nodes(node_bar).size();i++)
@@ -298,7 +298,7 @@ void MainWindow::makePlot()
 
     }
   }
-
+  ui->customPlot_bars->replot();
 }
 
 void MainWindow::axisLabelDoubleClick(QCPAxis *axis, QCPAxis::SelectablePart part)
@@ -694,7 +694,9 @@ void MainWindow::combobox_config()
       ui->comboBox->addItem("Sent Data");
       ui->comboBox->addItem("Received Data");
       ui->comboBox->addItem("Jitter");
-      ui->comboBox->addItem("Jitter Sum");
+      ui->comboBox->addItem("Jitter Avg");
+      ui->comboBox->addItem("Delay");
+      ui->comboBox->addItem("Delay Avg");
       ui->comboBox->addItem("Dropped Packets");
       ui->comboBox->setCurrentIndex(ui->comboBox->findData("Lambda", Qt::DisplayRole));
       ui->comboBox_2->setCurrentIndex(ui->comboBox_2->findData("0", Qt::DisplayRole));
@@ -705,7 +707,8 @@ void MainWindow::combobox_config()
       ui->comboBox_3->addItem("Goodput");
       ui->comboBox_3->addItem("Sent Data");
       ui->comboBox_3->addItem("Received Data");
-      ui->comboBox_3->addItem("Jitter Sum");
+      ui->comboBox_3->addItem("Jitter Avg");
+      ui->comboBox_3->addItem("Delay Avg");
       ui->comboBox_3->addItem("Dropped Packets");
       ui->comboBox_3->setCurrentIndex(ui->comboBox_3->findData("Lambda", Qt::DisplayRole));
       ui->comboBox_4->setCurrentIndex(ui->comboBox_4->findData("All", Qt::DisplayRole));
@@ -729,11 +732,11 @@ void MainWindow::on_comboBox_4_currentIndexChanged(int index)
     chart_checker = 1;
     if(index>-1)
     {
-      node_bar = index;
+      node_bar = index - 1;
     }
     ui->comboBox_3->setCurrentIndex(ui->comboBox_3->findData("All", Qt::DisplayRole));
     parameter_bar = "All";
-    if (node_bar != 0)
+    if (node_bar != -1)
       makePlot();
 
 }
@@ -767,6 +770,16 @@ void MainWindow::on_actionSave_Graph_2_triggered()
   QString selectedFilter;
   QString filename = QFileDialog::getSaveFileName(this,tr("Open File"),tr("/home/"),tr("JPG files (*.jpg);;BMP files (*.bmp);;PNG files (*.png);;PDF files(*.pdf)"), &selectedFilter);
 
+  QFont legendFont = font();
+  QFont tickerFont = font();
+  legendFont.setPointSize(25);
+  ui->customPlot->legend->setFont(legendFont);
+  ui->customPlot->legend->setSelectedFont(legendFont);
+  tickerFont.setPointSize(15);
+  ui->customPlot->xAxis->setTickLabelFont(tickerFont);
+  ui->customPlot->yAxis->setTickLabelFont(tickerFont);
+  ui->customPlot->replot();
+
   if (!filename.isEmpty())
   {
     if(ui->tabWidget->currentIndex() == 0)
@@ -793,6 +806,14 @@ void MainWindow::on_actionSave_Graph_2_triggered()
     }
 
   }
+
+  legendFont.setPointSize(10);
+  ui->customPlot->legend->setFont(legendFont);
+  ui->customPlot->legend->setSelectedFont(legendFont);
+  tickerFont.setPointSize(10);
+  ui->customPlot->xAxis->setTickLabelFont(tickerFont);
+  ui->customPlot->yAxis->setTickLabelFont(tickerFont);
+  ui->customPlot->replot();
 }
 
 void MainWindow::set_Scatter(QString scatter, int graph_index, int scatterSize)
@@ -966,7 +987,7 @@ void MainWindow::on_actionLine_Style_Scatter_Color_triggered()
             bar_node->setPen(QPen(bar_color));
             bar_node->setBrush(bar_color);
             QVector<QString> labels;
-            labels<<"Lambda"<<"Throughput"<<"Goodput"<<"Sent Data"<<"Received Data"<<"Jitter Sum"<<"Dropped Packets";
+            labels<<"Lambda"<<"Throughput"<<"Goodput"<<"Sent Data"<<"Received Data"<<"Jitter Avg"<<"Delay Avg"<<"Dropped Packets";
             QVector<double> ticks;
             QVector<double> bar_nodedata;
             for(int i = 0; i<alz->getValues_nodes(node_bar).size();i++)

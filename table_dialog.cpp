@@ -6,6 +6,7 @@ table_dialog::table_dialog(analyzer *alz,QWidget *parent) :
     ui(new Ui::table_dialog)
 {
     ui->setupUi(this);
+    this->setWindowTitle("Statistics (Results)");
     setup_table(alz);
 }
 
@@ -17,9 +18,9 @@ table_dialog::~table_dialog()
 void table_dialog::setup_table(analyzer *alz)
 {
     QStringList header;
-    ui->orderTable->setColumnCount(7);
+    ui->orderTable->setColumnCount(8);
     ui->orderTable->setRowCount(0);
-    header << "Node" << "Lambda" << "Throughput"<<"Goodput"<<"Sent Data"<<"Jitter Sum"<<"Dropped Packets";
+    header << "Node" << "Lambda" << "Throughput"<<"Goodput"<<"Sent Data"<<"Jitter Avg"<<"Delay Avg"<<"Dropped Packets";
     ui->orderTable->setHorizontalHeaderLabels(header);
 
     // insere linha a linha os valores da tabela
@@ -48,10 +49,13 @@ void table_dialog::setup_table(analyzer *alz)
         itemsent->setData(Qt::DisplayRole,(senttotal));
         ui->orderTable->setItem(currentLine,SENTDATA,itemsent);
 
-
         QTableWidgetItem* itemjitter = new QTableWidgetItem;
-        itemjitter->setData(Qt::DisplayRole,(alz->getJitterSum(i)));
-        ui->orderTable->setItem(currentLine,JITTERSUM,itemjitter);
+        itemjitter->setData(Qt::DisplayRole,(alz->getJitter_Avg(i)));
+        ui->orderTable->setItem(currentLine,JITTERAVG,itemjitter);
+
+        QTableWidgetItem* itemdelay = new QTableWidgetItem;
+        itemdelay->setData(Qt::DisplayRole,(alz->getDelay_Avg(i)));
+        ui->orderTable->setItem(currentLine,DELAYAVG,itemdelay);
 
         QTableWidgetItem* itemdropped = new QTableWidgetItem;
         itemdropped->setData(Qt::DisplayRole,(alz->getPckt(i)));

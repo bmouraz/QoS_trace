@@ -7,6 +7,7 @@ CustomLinesdialog::CustomLinesdialog(QWidget *parent) :
   ui(new Ui::CustomLinesdialog)
 {
   ui->setupUi(this);
+  this->setWindowTitle("Customize Graphics");
   ajust_LineStylecombo();
   ajust_ScatterStylecombo();
   ajust_Scatterslider();

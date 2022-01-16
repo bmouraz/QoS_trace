@@ -24,7 +24,7 @@ private slots:
 private:
     Ui::table_dialog *ui;
     enum Coluna{
-        NODE, LAMBDA, THROUGHPUT,GOODPUT,SENTDATA,JITTERSUM,DROPPED
+        NODE, LAMBDA, THROUGHPUT,GOODPUT,SENTDATA,JITTERAVG,DELAYAVG,DROPPED
     };
     void setup_table(analyzer *alz);
 };

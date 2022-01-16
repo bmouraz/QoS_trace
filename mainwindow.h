@@ -93,7 +93,7 @@ private:
 
   int scale_checker = 0;
   int chart_checker = 0; //if 0 - line 1 - bar
-  int ticker_spacing_x = 5;
+  int ticker_spacing_x = 1;
   int ticker_spacing_y = 1;
   QString parameter,parameter_bar;
   QString directory;

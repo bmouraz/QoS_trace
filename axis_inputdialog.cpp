@@ -6,6 +6,7 @@ axis_inputDialog::axis_inputDialog(QString label, int pos,QWidget *parent) :
     ui(new Ui::axis_inputDialog)
 {
     ui->setupUi(this);
+    this->setWindowTitle("Axis Input");
     ui->newaxislabel_lineEdit->setText(label);
     new_label = label;
     position = pos;

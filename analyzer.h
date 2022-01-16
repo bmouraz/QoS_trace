@@ -38,7 +38,8 @@ public:
   float getLambda(int node);
   float getThrpt(int node);
   float getGood(int node);
-  float getJitterSum(int node);
+  float getJitter_Avg(int node);
+  float getDelay_Avg(int node);
   int getPckt(int node);
   void transform2file(QString type, QString filename);
 
@@ -51,10 +52,12 @@ private:
   float queued=0.0;
   float dropped = 0.0;
   float dequeued=0.0;
+  float transmitted = 0.0;
   float timeSimu=0.0;
   float timeall=0.0;
-  int tst = 0;
 
+  QString sender;
+  QString receiver_jitter_helper;
 
   QVector <float> lambda ;
   QVector <float> throughput ;
@@ -67,6 +70,10 @@ private:
   QVector <float> jitter;
   QVector <float> jitterSum;
   QVector <float> jitterrec;
+  QVector <float> jitter_avg;
+  QVector <float> delay;
+  QVector <float> delay_sum;
+  QVector <float> delay_avg;
   QVector <int> sentdatarec;
   QVector <int> count_sent;
   QVector <int> count_rec;
@@ -74,6 +81,7 @@ private:
   QVector <QVector <float>> sentdata;
   QVector <int> pcktloss;
   QVector <QVector <float>> alldata;
+  QVector <QVector <QString>> jitter_helper;
   QString qd;
   int tcp_checker = 0;
   int node_intchecker;
