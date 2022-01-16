@@ -27,7 +27,7 @@ On the folder that .pro files were extracted, execute:
 qmake QoS_trace
 make
 ./QoS_trace
-``` 
+```
 
 ## How to Use:
 
@@ -38,7 +38,7 @@ Input a valid .tr file with trace output data.
 * [QMake 3.0](https://doc.qt.io/archives/3.3/qmake-manual-2.html) - Compiler
 * [Qt5](http://doc.qt.io/qt-5/linux.html) - Framework for GUI
 * [QCustomPlot](http://www.qcustomplot.com/) - Graphics
-* [QXlsx] (https://github.com/QtExcel/QXlsx) - XLSX export
+* [QXlsx](https://github.com/QtExcel/QXlsx) - XLSX export
 
 ### Autor
 
