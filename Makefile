@@ -566,6 +566,7 @@ qrc_resources.cpp: resources.qrc \
 		images/icon/Parallelogon_rectangle.png \
 		images/icon/edit_graph.png \
 		images/icon/save_image.png \
+		images/icon/refresh.png \
 		images/lines/line-dash.png \
 		images/lines/line-dashdotdot.png \
 		images/lines/line-dot.png \

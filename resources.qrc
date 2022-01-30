@@ -10,5 +10,6 @@
         <file>images/icon/save.png</file>
         <file>images/icon/save_image.png</file>
         <file>images/icon/Parallelogon_rectangle.png</file>
+        <file>images/icon/refresh.png</file>
     </qresource>
 </RCC>

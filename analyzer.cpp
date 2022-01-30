@@ -23,8 +23,10 @@ void analyzer::getParameters(QString line)
   int sizelength = 0;
 
   int flag_ipv4 = 0;
+  int flag_ipv4_2 = 0;
   int flag_wifimac = 0;
   int flag_ethernet = 0;
+  int flag_arp = 0;
 
 
   for (QString word : line.split(" ")) {
@@ -256,6 +258,16 @@ void analyzer::getParameters(QString line)
           {
             flag_wifimac = 1;
           }
+         break;
+        case(8):
+          if (word == "ns3::ArpHeader")
+          {
+            flag_arp = 1;
+          }
+          else if (word == "ns3::Ipv4Header")
+          {
+            flag_ipv4_2 = 1;
+          }
         break;
         case(22):
           if(flag_ipv4 == 1)
@@ -264,7 +276,7 @@ void analyzer::getParameters(QString line)
               sizelength = totallength;
 
 
-              if(qd == "+")
+              if(qd == "+" || qd == 't')
               {
                   sentdatarec[node_int] = sentdatarec[node_int]+ sizelength;
                   count_sent[node_int] = count_sent[node_int] + 1;
@@ -326,15 +338,18 @@ void analyzer::getParameters(QString line)
           }
         break;
         case(27):
-          if (flag_ipv4 == 0 && flag_wifimac == 0)
+          if (flag_ipv4 == 0 && flag_wifimac == 0 && flag_arp == 0)
           {
               totallength = word.toInt() +2;
               sizelength = totallength;
 
 
+
+
               if(qd == "+")
               {
                   sentdatarec[node_int] = sentdatarec[node_int]+ sizelength;
+
                   count_sent[node_int] = count_sent[node_int] + 1;
                   sent_avarage[node_int] = sentdatarec[node_int]/count_sent[node_int];
               }
@@ -345,16 +360,20 @@ void analyzer::getParameters(QString line)
                   rec_avarage[node_int] = recdatarec[node_int]/count_rec[node_int];
               }
 
+
           }
+
           break;
         case(28):
-          if ( flag_ipv4 == 0 && flag_wifimac == 0)
+          if ( flag_ipv4 == 0 && flag_wifimac == 0 && flag_arp == 0)
             sender = word;
         break;
-        case(29):
-          if ( flag_ipv4 == 0 && flag_wifimac == 0)
+        case(30):
+          if ( flag_ipv4 == 0 && flag_wifimac == 0 && flag_arp == 0)
           {
+
               receiver_jitter_helper = word;
+              receiver_jitter_helper.remove(QChar(')'), Qt::CaseInsensitive);
               if(qd == '+')
               {
                   QVector<QString> tmp;
@@ -412,7 +431,7 @@ void analyzer::getParameters(QString line)
                   //throughput[node_int] = float(lambda[node_int]*(sent_avarage[node_int]));
                   throughput[node_int] = float(sentdatarec[node_int]/timeSimu);
 
-                  goodput[node_int] = float(lambda[node_int]*(sent_avarage[node_int]-rec_avarage[node_int]));
+                  goodput[node_int] = float(lambda[node_int]*(sent_avarage[node_int]-8));
 
                   if(goodput[node_int]  < 0)
                       goodput[node_int] = 0;
@@ -492,20 +511,76 @@ void analyzer::getParameters(QString line)
 
            }
 
-          break;
-        case(41):
-          if(flag_ethernet == 1)
+          if(flag_ethernet == 1 && flag_ipv4_2 == 1)
           {
-              if(qd == "+")
+              if(word != "Default" && word != "(len:")
               {
-                  sentdatarec[node_int] = sentdatarec[node_int]+ sizelength;
-                  sent_avarage[node_int] = sentdatarec[node_int]/count_sent[node_int];
+                  const QRegExp rx(QLatin1Literal("[^0-9]+"));
+                  const auto&& parts = word.split(rx, QString::SkipEmptyParts);
+
+                  if(qd == "+")
+                  {
+                    //lambda[node_int] = float((((sentdatarec[node_int]))/((sizelength)))/(timeSimu));
+                      lambda[node_int] = float(count_sent[node_int]/timeSimu);
+                    //throughput[node_int] = float(lambda[node_int]*(sent_avarage[node_int]));
+                    throughput[node_int] = float(sentdatarec[node_int]/timeSimu);
+                    goodput[node_int] = float(lambda[node_int]*(parts[0].toInt()));
+
+                  }
               }
-              else if(qd == "r")
-              {
-                  recdatarec[node_int] = recdatarec[node_int]+ sizelength;
-                  rec_avarage[node_int] = recdatarec[node_int]/count_rec[node_int];
-              }
+
+          }
+
+
+          break;
+
+        case(40):
+          if(flag_ethernet == 1 && flag_ipv4_2 == 1)
+          {
+
+              QVector<float> tmp;
+
+              tmp.push_back(node_int);
+              tmp.push_back(timeall);
+              tmp.push_back(sentdatarec.at(node_int));
+              tmp.push_back(lambda[node_int]);
+              tmp.push_back(throughput[node_int]);
+              sentdata.push_back(tmp);
+
+
+              tmp.clear();
+
+              tmp.push_back(node_int);
+              tmp.push_back(timeall);
+              tmp.push_back(jitterrec[(node_int)]);
+              tmp.push_back(jitter_avg[(node_int)]);
+              tmp.push_back(pcktloss[(node_int)]);
+              tmp.push_back(goodput[node_int]);
+              tmp.push_back(recdatarec[node_int]);
+              tmp.push_back(delay[(node_int)]);
+              tmp.push_back(delay_avg[(node_int)]);
+              data_filtered.push_back(tmp);
+
+              tmp.clear();
+
+              tmp.push_back(node_int);
+              tmp.push_back(timeall);
+              tmp.push_back(sentdatarec[node_int]);
+              tmp.push_back(recdatarec[node_int]);
+              tmp.push_back(jitter_avg[(node_int)]);
+              tmp.push_back(pcktloss[(node_int)]);
+              tmp.push_back(lambda[node_int]);
+              tmp.push_back(throughput[node_int]);
+              tmp.push_back(goodput[node_int]);
+              tmp.push_back(delay_avg[(node_int)]);
+              alldata.push_back(tmp);
+
+          }
+        break;
+        case(41):
+
+          if(flag_ethernet == 1 && flag_ipv4_2 == 0)
+          {
               if(qd == "+")
                 {
 
@@ -514,10 +589,92 @@ void analyzer::getParameters(QString line)
                   //throughput[node_int] = float(lambda[node_int]*(sent_avarage[node_int]));
                   throughput[node_int] = float(sentdatarec[node_int]/timeSimu);
 
-                  goodput[node_int] = float(lambda[node_int]*(sent_avarage[node_int]-rec_avarage[node_int]));
+                  goodput[node_int] = float(lambda[node_int]*(sent_avarage[node_int]-8));
 
                   if(goodput[node_int]  < 0)
                       goodput[node_int] = 0;
+
+
+
+                }
+
+              QVector<float> tmp;
+
+              tmp.push_back(node_int);
+              tmp.push_back(timeall);
+              tmp.push_back(sentdatarec.at(node_int));
+              tmp.push_back(lambda[node_int]);
+              tmp.push_back(throughput[node_int]);
+              sentdata.push_back(tmp);
+
+
+              tmp.clear();
+
+              tmp.push_back(node_int);
+              tmp.push_back(timeall);
+              tmp.push_back(jitterrec[(node_int)]);
+              tmp.push_back(jitter_avg[(node_int)]);
+              tmp.push_back(pcktloss[(node_int)]);
+              tmp.push_back(goodput[node_int]);
+              tmp.push_back(recdatarec[node_int]);
+              tmp.push_back(delay[(node_int)]);
+              tmp.push_back(delay_avg[(node_int)]);
+              data_filtered.push_back(tmp);
+
+              tmp.clear();
+
+              tmp.push_back(node_int);
+              tmp.push_back(timeall);
+              tmp.push_back(sentdatarec[node_int]);
+              tmp.push_back(recdatarec[node_int]);
+              tmp.push_back(jitter_avg[(node_int)]);
+              tmp.push_back(pcktloss[(node_int)]);
+              tmp.push_back(lambda[node_int]);
+              tmp.push_back(throughput[node_int]);
+              tmp.push_back(goodput[node_int]);
+              tmp.push_back(delay_avg[(node_int)]);
+              alldata.push_back(tmp);
+
+          }
+
+          break;
+        case(47):
+              if(flag_ipv4 == 1)
+              {
+                  if(!(word == "length:"))
+                  {
+                      totallength = word.toInt() +2;
+                      sizelength = totallength;
+
+
+                      if(qd == "+" || qd == "t")
+                      {
+                          sentdatarec[node_int] = sentdatarec[node_int]+ sizelength;
+                          sent_avarage[node_int] = sentdatarec[node_int]/count_sent[node_int];
+                      }
+                      else if(qd == "r")
+                      {
+                          recdatarec[node_int] = recdatarec[node_int]+ sizelength;
+                          rec_avarage[node_int] = recdatarec[node_int]/count_rec[node_int];
+                      }
+                  }
+                  if(qd == "+" || qd == "t")
+                    {
+
+                      //lambda[node_int] = float((((sentdatarec[node_int]))/((sent_avarage[node_int])))/(timeSimu));
+                      lambda[node_int] = float(count_sent[node_int]/timeSimu);
+                      //throughput[node_int] = float(lambda[node_int]*(sent_avarage[node_int]));
+                      throughput[node_int] = float(sentdatarec[node_int]/timeSimu);
+
+                      goodput[node_int] = float(lambda[node_int]*(sent_avarage[node_int]-8));
+
+                      if(goodput[node_int]  < 0)
+                          goodput[node_int] = 0;
+
+
+
+
+                    }
 
                   QVector<float> tmp;
 
@@ -555,84 +712,6 @@ void analyzer::getParameters(QString line)
                   tmp.push_back(goodput[node_int]);
                   tmp.push_back(delay_avg[(node_int)]);
                   alldata.push_back(tmp);
-
-
-                }
-          }
-
-          break;
-        case(47):
-              if(flag_ipv4 == 1)
-              {
-                  if(!(word == "length:"))
-                  {
-                      totallength = word.toInt() +2;
-                      sizelength = totallength;
-
-
-                      if(qd == "+")
-                      {
-                          sentdatarec[node_int] = sentdatarec[node_int]+ sizelength;
-                          sent_avarage[node_int] = sentdatarec[node_int]/count_sent[node_int];
-                      }
-                      else if(qd == "r")
-                      {
-                          recdatarec[node_int] = recdatarec[node_int]+ sizelength;
-                          rec_avarage[node_int] = recdatarec[node_int]/count_rec[node_int];
-                      }
-                  }
-                  if(qd == "+")
-                    {
-
-                      //lambda[node_int] = float((((sentdatarec[node_int]))/((sent_avarage[node_int])))/(timeSimu));
-                      lambda[node_int] = float(count_sent[node_int]/timeSimu);
-                      //throughput[node_int] = float(lambda[node_int]*(sent_avarage[node_int]));
-                      throughput[node_int] = float(sentdatarec[node_int]/timeSimu);
-
-                      goodput[node_int] = float(lambda[node_int]*(sent_avarage[node_int]-rec_avarage[node_int]));
-
-                      if(goodput[node_int]  < 0)
-                          goodput[node_int] = 0;
-
-                      QVector<float> tmp;
-
-                      tmp.push_back(node_int);
-                      tmp.push_back(timeall);
-                      tmp.push_back(sentdatarec.at(node_int));
-                      tmp.push_back(lambda[node_int]);
-                      tmp.push_back(throughput[node_int]);
-                      sentdata.push_back(tmp);
-
-
-                      tmp.clear();
-
-                      tmp.push_back(node_int);
-                      tmp.push_back(timeall);
-                      tmp.push_back(jitterrec[(node_int)]);
-                      tmp.push_back(jitter_avg[(node_int)]);
-                      tmp.push_back(pcktloss[(node_int)]);
-                      tmp.push_back(goodput[node_int]);
-                      tmp.push_back(recdatarec[node_int]);
-                      tmp.push_back(delay[(node_int)]);
-                      tmp.push_back(delay_avg[(node_int)]);
-                      data_filtered.push_back(tmp);
-
-                      tmp.clear();
-
-                      tmp.push_back(node_int);
-                      tmp.push_back(timeall);
-                      tmp.push_back(sentdatarec[node_int]);
-                      tmp.push_back(recdatarec[node_int]);
-                      tmp.push_back(jitter_avg[(node_int)]);
-                      tmp.push_back(pcktloss[(node_int)]);
-                      tmp.push_back(lambda[node_int]);
-                      tmp.push_back(throughput[node_int]);
-                      tmp.push_back(goodput[node_int]);
-                      tmp.push_back(delay_avg[(node_int)]);
-                      alldata.push_back(tmp);
-
-
-                    }
               }
         break;
         case(48):
@@ -644,7 +723,7 @@ void analyzer::getParameters(QString line)
                     sizelength = totallength;
 
 
-                    if(qd == "+")
+                    if(qd == "+" || qd == "t")
                     {
                         sentdatarec[node_int] = sentdatarec[node_int]+ sizelength;
                         sent_avarage[node_int] = sentdatarec[node_int]/count_sent[node_int];
@@ -655,7 +734,7 @@ void analyzer::getParameters(QString line)
                         rec_avarage[node_int] = recdatarec[node_int]/count_rec[node_int];
                     }
                 }
-                if(qd == "+")
+                if(qd == "+" || qd == "t")
                   {
 
                     //lambda[node_int] = float((((sentdatarec[node_int]))/((sent_avarage[node_int])))/(timeSimu));
@@ -663,50 +742,51 @@ void analyzer::getParameters(QString line)
                     //throughput[node_int] = float(lambda[node_int]*(sent_avarage[node_int]));
                     throughput[node_int] = float(sentdatarec[node_int]/timeSimu);
 
-                    goodput[node_int] = float(lambda[node_int]*(sent_avarage[node_int]-rec_avarage[node_int]));
+                    goodput[node_int] = float(lambda[node_int]*(sent_avarage[node_int]-8));
 
                     if(goodput[node_int]  < 0)
                         goodput[node_int] = 0;
 
-                    QVector<float> tmp;
 
-                    tmp.push_back(node_int);
-                    tmp.push_back(timeall);
-                    tmp.push_back(sentdatarec.at(node_int));
-                    tmp.push_back(lambda[node_int]);
-                    tmp.push_back(throughput[node_int]);
-                    sentdata.push_back(tmp);
-
-
-                    tmp.clear();
-
-                    tmp.push_back(node_int);
-                    tmp.push_back(timeall);
-                    tmp.push_back(jitterrec[(node_int)]);
-                    tmp.push_back(jitter_avg[(node_int)]);
-                    tmp.push_back(pcktloss[(node_int)]);
-                    tmp.push_back(goodput[node_int]);
-                    tmp.push_back(recdatarec[node_int]);
-                    tmp.push_back(delay[(node_int)]);
-                    tmp.push_back(delay_avg[(node_int)]);
-                    data_filtered.push_back(tmp);
-
-                    tmp.clear();
-
-                    tmp.push_back(node_int);
-                    tmp.push_back(timeall);
-                    tmp.push_back(sentdatarec[node_int]);
-                    tmp.push_back(recdatarec[node_int]);
-                    tmp.push_back(jitter_avg[(node_int)]);
-                    tmp.push_back(pcktloss[(node_int)]);
-                    tmp.push_back(lambda[node_int]);
-                    tmp.push_back(throughput[node_int]);
-                    tmp.push_back(goodput[node_int]);
-                    tmp.push_back(delay_avg[(node_int)]);
-                    alldata.push_back(tmp);
 
 
                   }
+                QVector<float> tmp;
+
+                tmp.push_back(node_int);
+                tmp.push_back(timeall);
+                tmp.push_back(sentdatarec.at(node_int));
+                tmp.push_back(lambda[node_int]);
+                tmp.push_back(throughput[node_int]);
+                sentdata.push_back(tmp);
+
+
+                tmp.clear();
+
+                tmp.push_back(node_int);
+                tmp.push_back(timeall);
+                tmp.push_back(jitterrec[(node_int)]);
+                tmp.push_back(jitter_avg[(node_int)]);
+                tmp.push_back(pcktloss[(node_int)]);
+                tmp.push_back(goodput[node_int]);
+                tmp.push_back(recdatarec[node_int]);
+                tmp.push_back(delay[(node_int)]);
+                tmp.push_back(delay_avg[(node_int)]);
+                data_filtered.push_back(tmp);
+
+                tmp.clear();
+
+                tmp.push_back(node_int);
+                tmp.push_back(timeall);
+                tmp.push_back(sentdatarec[node_int]);
+                tmp.push_back(recdatarec[node_int]);
+                tmp.push_back(jitter_avg[(node_int)]);
+                tmp.push_back(pcktloss[(node_int)]);
+                tmp.push_back(lambda[node_int]);
+                tmp.push_back(throughput[node_int]);
+                tmp.push_back(goodput[node_int]);
+                tmp.push_back(delay_avg[(node_int)]);
+                alldata.push_back(tmp);
             }
         break;
     }
@@ -1237,7 +1317,7 @@ QVector<float> analyzer::getValues(QString parameter)
       for(int i = 0; i<nodelist.size();i++)
         parameters.push_back(recdatarec[i]);
     }
-  if (QString::compare(parameter, "Jitter Avg", Qt::CaseInsensitive) == 0)
+  if (QString::compare(parameter, "Delay Avg", Qt::CaseInsensitive) == 0)
     {
       for(int i = 0; i<nodelist.size();i++)
         parameters.push_back(delay_avg[i]);

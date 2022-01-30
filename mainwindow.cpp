@@ -30,9 +30,7 @@ void MainWindow::on_actionOpen_File_triggered()
       if(arq->open(QFile::ReadOnly | QFile::Text))
       {
         alz = new analyzer(arq);
-        ui->actionChange_Scale_Log->setChecked(false);
-        ui->actionChange_Scale_Linear->setChecked(true);
-        ui->actionSubgrid->setChecked(false);
+
         int aux = qtd_graph_variable;
         for(int i=0;i<aux;i++)
           {
@@ -44,7 +42,7 @@ void MainWindow::on_actionOpen_File_triggered()
         ui->customPlot_bars->clearPlottables();
         ui->customPlot_bars->clearGraphs();
 
-        scale_checker = 0;
+
         ui->customPlot->xAxis->setTicks(false);
         combobox_config();
         ui->customPlot->plotLayout()->insertRow(0);
@@ -68,6 +66,10 @@ void MainWindow::on_actionOpen_File_triggered()
         ui->actionWhite->setCheckable(true);
 
 
+        scale_checker = 0;
+        ui->actionChange_Scale_Log->setChecked(false);
+        ui->actionChange_Scale_Linear->setChecked(true);
+        ui->actionSubgrid->setChecked(false);
         // connect slot that ties some axis selections together (especially opposite axes):
        connect(ui->customPlot, SIGNAL(selectionChangedByUser()), this, SLOT(selectionChanged()));
        connect(ui->customPlot_bars, SIGNAL(selectionChangedByUser()), this, SLOT(selectionChanged_bars()));
@@ -117,6 +119,8 @@ void MainWindow::on_actionOpen_File_triggered()
         ui->customPlot->clearPlottables();
         ui->customPlot->clearGraphs();
         scale_checker = 0;
+        ui->actionChange_Scale_Log->setChecked(false);
+        ui->actionChange_Scale_Linear->setChecked(true);
         ui->customPlot->xAxis->setTicks(false);
         combobox_config();
 
@@ -231,7 +235,7 @@ void MainWindow::makePlot()
 
         ui->customPlot_bars->legend->setVisible(true);
         ui->customPlot_bars->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop|Qt::AlignRight);
-        ui->customPlot_bars->legend->setBrush(QColor(0, 0, 0, 100));
+        ui->customPlot_bars->legend->setBrush(QColor(255,255,255, 100));
         ui->customPlot_bars->legend->setBorderPen(Qt::NoPen);
         QFont legendFont = font();
         legendFont.setPointSize(10);
@@ -287,7 +291,7 @@ void MainWindow::makePlot()
 
         ui->customPlot_bars->legend->setVisible(true);
         ui->customPlot_bars->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop|Qt::AlignRight);
-        ui->customPlot_bars->legend->setBrush(QColor(0, 0, 0, 100));
+        ui->customPlot_bars->legend->setBrush(QColor(255,255,255, 100));
         ui->customPlot_bars->legend->setBorderPen(Qt::NoPen);
         QFont legendFont = font();
         legendFont.setPointSize(10);
@@ -770,20 +774,22 @@ void MainWindow::on_actionSave_Graph_2_triggered()
   QString selectedFilter;
   QString filename = QFileDialog::getSaveFileName(this,tr("Open File"),tr("/home/"),tr("JPG files (*.jpg);;BMP files (*.bmp);;PNG files (*.png);;PDF files(*.pdf)"), &selectedFilter);
 
-  QFont legendFont = font();
-  QFont tickerFont = font();
-  legendFont.setPointSize(25);
-  ui->customPlot->legend->setFont(legendFont);
-  ui->customPlot->legend->setSelectedFont(legendFont);
-  tickerFont.setPointSize(15);
-  ui->customPlot->xAxis->setTickLabelFont(tickerFont);
-  ui->customPlot->yAxis->setTickLabelFont(tickerFont);
-  ui->customPlot->replot();
+
 
   if (!filename.isEmpty())
   {
     if(ui->tabWidget->currentIndex() == 0)
     {
+        QFont legendFont = font();
+        QFont tickerFont = font();
+        legendFont.setPointSize(25);
+        ui->customPlot->legend->setFont(legendFont);
+        ui->customPlot->legend->setSelectedFont(legendFont);
+        tickerFont.setPointSize(15);
+        ui->customPlot->xAxis->setTickLabelFont(tickerFont);
+        ui->customPlot->yAxis->setTickLabelFont(tickerFont);
+        ui->customPlot->replot();
+
         if(QString::compare(selectedFilter, "JPG files (*.jpg)", Qt::CaseInsensitive) == 0)
           ui->customPlot->saveJpg(filename+".jpg", 900,720);
         else if(QString::compare(selectedFilter, "BMP files (*.bmp)", Qt::CaseInsensitive) == 0)
@@ -792,9 +798,29 @@ void MainWindow::on_actionSave_Graph_2_triggered()
          ui->customPlot->savePng(filename+".png", 900,720);
         else
           ui->customPlot->savePdf(filename+".pdf", 900,720);
+
+
+        legendFont.setPointSize(10);
+        ui->customPlot->legend->setFont(legendFont);
+        ui->customPlot->legend->setSelectedFont(legendFont);
+        tickerFont.setPointSize(10);
+        ui->customPlot->xAxis->setTickLabelFont(tickerFont);
+        ui->customPlot->yAxis->setTickLabelFont(tickerFont);
+        ui->customPlot->replot();
     }
     else if(ui->tabWidget->currentIndex() == 1)
     {
+        QFont legendFont = font();
+        QFont tickerFont = font();
+        legendFont.setPointSize(25);
+        ui->customPlot_bars->legend->setFont(legendFont);
+        ui->customPlot_bars->legend->setSelectedFont(legendFont);
+        tickerFont.setPointSize(12);
+        ui->customPlot_bars->xAxis->setTickLabelFont(tickerFont);
+        ui->customPlot_bars->yAxis->setTickLabelFont(tickerFont);
+        ui->customPlot_bars->replot();
+
+
         if(QString::compare(selectedFilter, "JPG files (*.jpg)", Qt::CaseInsensitive) == 0)
           ui->customPlot_bars->saveJpg(filename+".jpg", 900,720);
         else if(QString::compare(selectedFilter, "BMP files (*.bmp)", Qt::CaseInsensitive) == 0)
@@ -803,17 +829,20 @@ void MainWindow::on_actionSave_Graph_2_triggered()
          ui->customPlot_bars->savePng(filename+".png", 900,720);
         else
           ui->customPlot_bars->savePdf(filename+".pdf", 900,720);
+
+
+        legendFont.setPointSize(10);
+        ui->customPlot_bars->legend->setFont(legendFont);
+        ui->customPlot_bars->legend->setSelectedFont(legendFont);
+        tickerFont.setPointSize(10);
+        ui->customPlot_bars->xAxis->setTickLabelFont(tickerFont);
+        ui->customPlot_bars->yAxis->setTickLabelFont(tickerFont);
+        ui->customPlot_bars->replot();
     }
 
   }
 
-  legendFont.setPointSize(10);
-  ui->customPlot->legend->setFont(legendFont);
-  ui->customPlot->legend->setSelectedFont(legendFont);
-  tickerFont.setPointSize(10);
-  ui->customPlot->xAxis->setTickLabelFont(tickerFont);
-  ui->customPlot->yAxis->setTickLabelFont(tickerFont);
-  ui->customPlot->replot();
+
 }
 
 void MainWindow::set_Scatter(QString scatter, int graph_index, int scatterSize)
@@ -967,7 +996,7 @@ void MainWindow::on_actionLine_Style_Scatter_Color_triggered()
 
             ui->customPlot_bars->legend->setVisible(true);
             ui->customPlot_bars->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop|Qt::AlignRight);
-            ui->customPlot_bars->legend->setBrush(QColor(0, 0, 0, 100));
+            ui->customPlot_bars->legend->setBrush(QColor(255,255,255, 100));
             ui->customPlot_bars->legend->setBorderPen(Qt::NoPen);
             QFont legendFont = font();
             legendFont.setPointSize(10);
@@ -1025,7 +1054,7 @@ void MainWindow::on_actionLine_Style_Scatter_Color_triggered()
 
             ui->customPlot_bars->legend->setVisible(true);
             ui->customPlot_bars->axisRect()->insetLayout()->setInsetAlignment(0, Qt::AlignTop|Qt::AlignRight);
-            ui->customPlot_bars->legend->setBrush(QColor(0, 0, 0, 100));
+            ui->customPlot_bars->legend->setBrush(QColor(255,255,255, 100));
             ui->customPlot_bars->legend->setBorderPen(Qt::NoPen);
             QFont legendFont = font();
             legendFont.setPointSize(10);
@@ -1069,8 +1098,6 @@ void MainWindow::on_actionChange_Scale_Log_triggered()
         ui->customPlot->yAxis2->setTicker(logTicker);
         ui->customPlot->yAxis->setNumberFormat("eb"); // e = exponential, b = decimal pow
         ui->customPlot->yAxis->setNumberPrecision(0);
-        ui->customPlot->replot();
-
 
         ui->customPlot_bars->yAxis->setScaleType(QCPAxis::stLogarithmic);
         ui->customPlot_bars->yAxis2->setScaleType(QCPAxis::stLogarithmic);
@@ -1078,6 +1105,8 @@ void MainWindow::on_actionChange_Scale_Log_triggered()
         ui->customPlot_bars->yAxis2->setTicker(logTicker);
         ui->customPlot_bars->yAxis->setNumberFormat("eb"); // e = exponential, b = decimal pow
         ui->customPlot_bars->yAxis->setNumberPrecision(0);
+
+        ui->customPlot->replot();
         ui->customPlot_bars->replot();
 }
 
@@ -1091,18 +1120,21 @@ void MainWindow::on_actionChange_Scale_Linear_triggered()
     QSharedPointer <QCPAxisTickerFixed> fixedTicker(new QCPAxisTickerFixed);
     fixedTicker->setTickStep(ticker_spacing_y);
     ui->customPlot->yAxis->setTicker(fixedTicker);
+    ui->customPlot->yAxis2->setTicker(fixedTicker);
     ui->customPlot->yAxis->setNumberFormat("f");
     ui->customPlot->xAxis->setTicks(true);
     ui->customPlot->xAxis->rescale();
-    ui->customPlot->replot();
 
     ui->customPlot_bars->yAxis->setScaleType(QCPAxis::stLinear);
     ui->customPlot_bars->yAxis2->setScaleType(QCPAxis::stLinear);
-    fixedTicker->setTickStep(ticker_spacing_y);
+    fixedTicker->setTickStep(ticker_spacing_y + 9);
     ui->customPlot_bars->yAxis->setTicker(fixedTicker);
+    ui->customPlot_bars->yAxis2->setTicker(fixedTicker);
     ui->customPlot_bars->yAxis->setNumberFormat("f");
     ui->customPlot_bars->xAxis->setTicks(true);
     ui->customPlot_bars->xAxis->rescale();
+
+    ui->customPlot->replot();
     ui->customPlot_bars->replot();
 }
 
@@ -1236,5 +1268,15 @@ void MainWindow::on_actionClose_Rectangle_triggered()
         ui->customPlot_bars->yAxis2->setTickLabels(false);
         close_rectangle = 1;
     }
+    ui->customPlot->replot();
+}
+
+void MainWindow::on_actionRescale_triggered()
+{
+    ui->customPlot->rescaleAxes(true);
+    ui->customPlot->xAxis->rescale(true);
+    ui->customPlot->xAxis2->rescale(true);
+    ui->customPlot->yAxis->rescale(true);
+    ui->customPlot->yAxis2->rescale(true);
     ui->customPlot->replot();
 }

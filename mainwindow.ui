@@ -319,6 +319,7 @@
     <addaction name="actionChange_Xticks"/>
     <addaction name="actionStatistics_Results"/>
     <addaction name="actionClose_Rectangle"/>
+    <addaction name="actionRescale"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuGraph"/>
@@ -341,6 +342,7 @@
    <addaction name="actionSave_Graph_2"/>
    <addaction name="actionLine_Style_Scatter_Color"/>
    <addaction name="actionClose_Rectangle"/>
+   <addaction name="actionRescale"/>
   </widget>
   <action name="actionOpen_File">
    <property name="icon">
@@ -447,6 +449,18 @@
   <action name="actionAbout">
    <property name="text">
     <string>About</string>
+   </property>
+  </action>
+  <action name="actionRescale">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/images/icon/refresh.png</normaloff>:/images/icon/refresh.png</iconset>
+   </property>
+   <property name="text">
+    <string>Rescale</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
    </property>
   </action>
  </widget>

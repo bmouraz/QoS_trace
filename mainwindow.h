@@ -82,6 +82,8 @@ private slots:
 
   void on_actionClose_Rectangle_triggered();
 
+  void on_actionRescale_triggered();
+
 private:
 
   QVector <QString> qtd_graphs_vector;
